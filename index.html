@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кинонавигатор 2.0 — 1500+ фильмов, подбор с умом</title>
+    <title>Кинонавигатор 3.0 — умный подбор фильмов</title>
     <style>
         * {
             margin: 0;
@@ -23,12 +23,12 @@
             margin: 0 auto;
         }
 
-        /* Вкладки */
         .tabs {
             display: flex;
             gap: 12px;
             margin-bottom: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -133,10 +133,24 @@
             transform: scale(1.01);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #f5c518;
-            color: #f5c518;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .button-group .btn {
+            margin-top: 0;
         }
 
         .question-card {
@@ -212,6 +226,54 @@
             font-size: 0.9rem;
         }
 
+        .rating-area {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .rating-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 24px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        .rating-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .rating-btn.like:hover { background: #4caf50; }
+        .rating-btn.dislike:hover { background: #f44336; }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .share-btn:hover {
+            background: rgba(245, 197, 24, 0.3);
+        }
+
         .similar-list {
             margin-top: 20px;
             text-align: left;
@@ -230,6 +292,12 @@
             padding: 12px;
             border-radius: 20px;
             margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .similar-item:hover {
+            background: rgba(245, 197, 24, 0.2);
         }
 
         .similar-name {
@@ -284,6 +352,93 @@
             font-size: 0.85rem;
         }
 
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 16px;
+        }
+
+        .history-title {
+            color: #f5c518;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: rgba(245, 197, 24, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f5c518;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-section {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        .contact-email {
+            background: rgba(245, 197, 24, 0.2);
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 60px;
+            color: #f5c518;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
         footer {
             text-align: center;
             font-size: 0.7rem;
@@ -298,6 +453,9 @@
             .movie-title {
                 font-size: 1.3rem;
             }
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -305,6 +463,9 @@
 <div class="container">
     <div class="tabs">
         <button class="tab-btn active" id="tabFinderBtn">🎬 Найти фильм</button>
+        <button class="tab-btn" id="tabHistoryBtn">📜 История</button>
+        <button class="tab-btn" id="tabStatsBtn">📊 Статистика</button>
+        <button class="tab-btn" id="tabSearchBtn">🔍 Поиск</button>
         <button class="tab-btn" id="tabLoginBtn">🔐 Войти</button>
         <button class="tab-btn" id="tabRegisterBtn">📝 Регистрация</button>
     </div>
@@ -339,14 +500,46 @@
             <div class="options" id="duration-group"></div>
         </div>
 
-        <button class="btn btn-primary" id="findBtn">🔍 ПОДОБРАТЬ ФИЛЬМ</button>
+        <div class="button-group">
+            <button class="btn btn-primary" id="findBtn">🔍 ПОДОБРАТЬ</button>
+            <button class="btn btn-secondary" id="randomBtn">🎲 СЛУЧАЙНЫЙ ФИЛЬМ</button>
+        </div>
 
         <div class="result-box" id="resultBox">
-            <div style="color:#ccc;">👇 Выбери параметры и нажми кнопку</div>
+            <div style="color:#ccc;">👇 Выбери параметры или нажми «Случайный фильм»</div>
         </div>
 
         <button class="reset-btn" id="resetFinderBtn">🔄 Сбросить всё</button>
-        <footer>Нет точного совпадения? Покажу 5 похожих вариантов</footer>
+    </div>
+
+    <!-- Панель: История -->
+    <div id="historyPanel" class="card" style="display: none;">
+        <h1>📜 История подборок</h1>
+        <div class="sub">Твои последние найденные фильмы</div>
+        <div id="historyList" style="margin-top: 20px;">
+            <div style="color: #aaa; text-align: center;">Пока ничего нет. Найди несколько фильмов, и они появятся здесь.</div>
+        </div>
+        <button class="reset-btn" id="clearHistoryBtn" style="margin-top: 20px;">🗑️ Очистить историю</button>
+    </div>
+
+    <!-- Панель: Статистика -->
+    <div id="statsPanel" class="card" style="display: none;">
+        <h1>📊 Статистика</h1>
+        <div class="sub">Популярные жанры и настроения</div>
+        <div id="statsContainer" class="stats-grid"></div>
+        <div style="margin-top: 20px; text-align: center; color: #aaa; font-size: 0.8rem;">
+            📈 Статистика обновляется на основе твоих подборок
+        </div>
+    </div>
+
+    <!-- Панель: Поиск по названию -->
+    <div id="searchPanel" class="card" style="display: none;">
+        <h1>🔍 Поиск фильма</h1>
+        <div class="sub">Найди фильм по названию</div>
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Введи название фильма...">
+        </div>
+        <div id="searchResults" style="margin-top: 20px;"></div>
     </div>
 
     <!-- Панель: Вход -->
@@ -380,17 +573,32 @@
         <button class="btn btn-primary" id="doRegisterBtn">Зарегистрироваться</button>
         <div id="regError" class="error-msg" style="margin-top: 12px; text-align: center;"></div>
     </div>
+
+    <!-- Контактная информация разработчика -->
+    <div class="card" style="margin-top: 20px; text-align: center;">
+        <div class="contact-section">
+            <span style="font-size: 1.2rem;">📧</span>
+            <div class="contact-email">
+                ✉️ kinopomoshchnik@mail.ru
+            </div>
+            <div style="margin-top: 12px; font-size: 0.8rem; color: #aaa;">
+                📱 По вопросам сотрудничества и предложениям<br>
+                Свяжись с разработчиком по почте
+            </div>
+        </div>
+        <footer>
+            🎬 Кинонавигатор 3.0 | 1500+ фильмов | Умный подбор | 2026
+        </footer>
+    </div>
 </div>
 
 <script>
-    // -------------------- БОЛЬШАЯ БАЗА ФИЛЬМОВ (1500+ через генерацию) --------------------
-    // Реальные жанры, настроения, эпохи, длительности
+    // -------------------- БАЗА ФИЛЬМОВ (1500+) --------------------
     const genreList = ["драма", "комедия", "боевик", "триллер", "фантастика", "ужасы", "мелодрама", "криминал", "приключения", "аниме"];
     const moodList = ["лёгкое", "напряжённое", "вдохновляющее", "трогательное", "дерзкое", "романтичное", "мистическое", "эпичное", "тяжёлое", "ностальгия"];
     const eraList = ["классика", "современный", "новинка"];
     const durationList = ["короткий", "средний", "длинный"];
 
-    // Функция генерации 1500+ уникальных фильмов
     function generateMovies(count) {
         const movies = [];
         const titles = [
@@ -401,8 +609,7 @@
             "Омерзительная восьмёрка", "Бесславные ублюдки", "Джанго освобождённый", "Титаник", "Аватар", "Мстители",
             "Стражи Галактики", "Дэдпул", "Логан", "Безумный Макс", "Бегущий по лезвию", "Сияние", "Психо", "Оно",
             "Тихое место", "Заклятие", "Астрал", "Пила", "Крик", "Хэллоуин", "Звонок", "Гравитация", "Марсианин",
-            "Прибытие", "Довод", "Тенет", "Манк", "Ирландец", "Рокки", "Рэмбо", "Крепкий орешек", "Скорость",
-            "Плохие парни", "Полицейский из Беверли-Хиллз", "Такси", "Форсаж", "Миссия невыполнима", "Джеймс Бонд",
+            "Прибытие", "Довод", "Тенет", "Манк", "Ирландец", "Рокки", "Рэмбо", "Скорость", "Форсаж", "Миссия невыполнима",
             "Люди в чёрном", "Люди Икс", "Человек-паук", "Железный человек", "Тор", "Капитан Америка", "Дэдпул",
             "Хоббит", "Сумерки", "Голодные игры", "Дивергент", "Бегущий в лабиринте", "Война миров Z"
         ];
@@ -428,15 +635,180 @@
         return movies;
     }
 
-    let ALL_MOVIES = generateMovies(1550); // 1550 фильмов
-    console.log("Загружено фильмов:", ALL_MOVIES.length);
+    let ALL_MOVIES = generateMovies(1550);
 
-    // ---------- ПОЛЬЗОВАТЕЛИ (localStorage) ----------
+    // ---------- ПОЛЬЗОВАТЕЛИ, ИСТОРИЯ, РЕЙТИНГИ, СТАТИСТИКА ----------
     let users = JSON.parse(localStorage.getItem('kinousers')) || {};
     let currentUser = localStorage.getItem('currentKinoUser') || null;
+    
+    let userHistory = JSON.parse(localStorage.getItem('kinoHistory')) || {};
+    let userRatings = JSON.parse(localStorage.getItem('kinoRatings')) || {};
+    let userStats = JSON.parse(localStorage.getItem('kinoStats')) || { genre: {}, mood: {} };
+    
+    let currentMovie = null; // для хранения текущего показанного фильма (для рейтинга)
+    
+    function updateStats(genre, mood) {
+        if (!currentUser) return;
+        if (!userStats[currentUser]) userStats[currentUser] = { genre: {}, mood: {} };
+        userStats[currentUser].genre[genre] = (userStats[currentUser].genre[genre] || 0) + 1;
+        userStats[currentUser].mood[mood] = (userStats[currentUser].mood[mood] || 0) + 1;
+        localStorage.setItem('kinoStats', JSON.stringify(userStats));
+    }
+    
+    function addToHistory(movie) {
+        if (!currentUser) return;
+        if (!userHistory[currentUser]) userHistory[currentUser] = [];
+        userHistory[currentUser] = [movie, ...userHistory[currentUser].filter(m => m.title !== movie.title)].slice(0, 20);
+        localStorage.setItem('kinoHistory', JSON.stringify(userHistory));
+        if (document.getElementById('historyPanel').style.display !== 'none') renderHistory();
+        updateStats(movie.genre, movie.mood);
+    }
+    
+    function addRating(movie, isLike) {
+        if (!currentUser) return;
+        if (!userRatings[currentUser]) userRatings[currentUser] = {};
+        userRatings[currentUser][movie.title] = isLike ? 'like' : 'dislike';
+        localStorage.setItem('kinoRatings', JSON.stringify(userRatings));
+    }
+    
+    function renderHistory() {
+        const historyContainer = document.getElementById('historyList');
+        if (!currentUser || !userHistory[currentUser] || userHistory[currentUser].length === 0) {
+            historyContainer.innerHTML = '<div style="color: #aaa; text-align: center;">Пока ничего нет. Найди несколько фильмов, и они появятся здесь.</div>';
+            return;
+        }
+        let html = '';
+        userHistory[currentUser].forEach((movie, idx) => {
+            html += `
+                <div class="history-item" data-movie-title="${movie.title}">
+                    🎬 <strong>${movie.title}</strong><br>
+                    <span style="font-size: 0.7rem;">${movie.genre} · ${movie.mood} · ${movie.duration}</span>
+                </div>
+            `;
+        });
+        historyContainer.innerHTML = html;
+        document.querySelectorAll('.history-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const title = el.dataset.movieTitle;
+                const movie = ALL_MOVIES.find(m => m.title === title);
+                if (movie) displayMovieResult(movie, true);
+                showFinderPanel();
+            });
+        });
+    }
+    
+    function renderStats() {
+        const statsContainer = document.getElementById('statsContainer');
+        if (!currentUser || !userStats[currentUser]) {
+            statsContainer.innerHTML = '<div style="color: #aaa; text-align: center;">Пока нет статистики. Найди несколько фильмов.</div>';
+            return;
+        }
+        const stats = userStats[currentUser];
+        let genreHtml = '<div class="stat-card"><div class="stat-value">🎭</div><div class="stat-label">Топ жанры</div>';
+        let topGenre = Object.entries(stats.genre).sort((a,b) => b[1] - a[1]).slice(0,3);
+        topGenre.forEach(([g, count]) => { genreHtml += `<div style="font-size:0.8rem; margin-top:5px;">${g}: ${count}</div>`; });
+        genreHtml += '</div>';
+        
+        let moodHtml = '<div class="stat-card"><div class="stat-value">✨</div><div class="stat-label">Топ настроения</div>';
+        let topMood = Object.entries(stats.mood).sort((a,b) => b[1] - a[1]).slice(0,3);
+        topMood.forEach(([m, count]) => { moodHtml += `<div style="font-size:0.8rem; margin-top:5px;">${m}: ${count}</div>`; });
+        moodHtml += '</div>';
+        
+        statsContainer.innerHTML = genreHtml + moodHtml;
+    }
+    
+    function clearHistory() {
+        if (currentUser) {
+            userHistory[currentUser] = [];
+            localStorage.setItem('kinoHistory', JSON.stringify(userHistory));
+            renderHistory();
+        }
+    }
+    
+    function searchMovies(query) {
+        if (!query.trim()) return [];
+        const lowerQuery = query.toLowerCase();
+        return ALL_MOVIES.filter(m => m.title.toLowerCase().includes(lowerQuery)).slice(0, 10);
+    }
+    
+    function displayMovieResult(movie, addToHistoryFlag = true) {
+        currentMovie = movie;
+        const rating = currentUser && userRatings[currentUser] ? userRatings[currentUser][movie.title] : null;
+        const likeActive = rating === 'like' ? '👍' : '👍';
+        const dislikeActive = rating === 'dislike' ? '👎' : '👎';
+        
+        let html = `
+            <div class="movie-title">🎥 ${movie.title}</div>
+            <div class="movie-meta">
+                <span>🎭 ${movie.genre}</span> 
+                <span>✨ ${movie.mood}</span>
+                <span>⏱️ ${movie.duration}</span>
+                <span>📅 ${movie.era}</span>
+            </div>
+            <div class="movie-desc">${movie.desc}</div>
+            <div class="rating-area">
+                <button class="rating-btn like" data-rating="like">👍 Нравится</button>
+                <button class="rating-btn dislike" data-rating="dislike">👎 Не нравится</button>
+            </div>
+            <div class="share-buttons">
+                <button class="share-btn" data-share="tg">📱 Telegram</button>
+                <button class="share-btn" data-share="wa">💬 WhatsApp</button>
+                <button class="share-btn" data-share="copy">📋 Копировать</button>
+            </div>
+        `;
+        
+        document.getElementById('resultBox').innerHTML = html;
+        
+        document.querySelectorAll('.rating-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ratingValue = e.target.dataset.rating;
+                addRating(movie, ratingValue === 'like');
+                displayMovieResult(movie, false);
+            });
+        });
+        
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const text = `🎬 Рекомендую фильм: ${movie.title}\n📊 Жанр: ${movie.genre}\n⏱️ Длительность: ${movie.duration}\n\nНайдено на Кинонавигаторе!`;
+                if (e.target.dataset.share === 'tg') {
+                    window.open(`https://t.me/share/url?url=${encodeURIComponent(text)}&text=${encodeURIComponent(text)}`, '_blank');
+                } else if (e.target.dataset.share === 'wa') {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                } else if (e.target.dataset.share === 'copy') {
+                    navigator.clipboard.writeText(text);
+                    alert('✅ Название фильма скопировано!');
+                }
+            });
+        });
+        
+        if (addToHistoryFlag) addToHistory(movie);
+    }
+    
+    function displaySimilarMovies(movies) {
+        let similarHtml = `<div class="similar-title">🔍 Вот 5 похожих фильмов (нажми для выбора):</div>`;
+        movies.forEach(m => {
+            similarHtml += `
+                <div class="similar-item" data-movie-title="${m.title}">
+                    <div class="similar-name">🎬 ${m.title}</div>
+                    <div class="similar-info">${m.genre} · ${m.mood} · ${m.duration} · ${m.era}</div>
+                </div>
+            `;
+        });
+        document.getElementById('resultBox').innerHTML = similarHtml;
+        document.querySelectorAll('.similar-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const title = el.dataset.movieTitle;
+                const movie = ALL_MOVIES.find(m => m.title === title);
+                if (movie) displayMovieResult(movie, true);
+            });
+        });
+    }
 
-    // ---------- UI элементы ----------
+    // ---------- UI ЭЛЕМЕНТЫ ----------
     const finderPanel = document.getElementById('finderPanel');
+    const historyPanel = document.getElementById('historyPanel');
+    const statsPanel = document.getElementById('statsPanel');
+    const searchPanel = document.getElementById('searchPanel');
     const loginPanel = document.getElementById('loginPanel');
     const registerPanel = document.getElementById('registerPanel');
     const userInfoArea = document.getElementById('userInfoArea');
@@ -447,9 +819,6 @@
         if (currentUser) {
             userInfoArea.style.display = 'flex';
             currentUserNameSpan.textContent = currentUser;
-            document.getElementById('tabFinderBtn').style.display = 'block';
-            document.getElementById('tabLoginBtn').style.display = 'block';
-            document.getElementById('tabRegisterBtn').style.display = 'block';
         } else {
             userInfoArea.style.display = 'none';
         }
@@ -464,14 +833,20 @@
 
     logoutBtn.addEventListener('click', logout);
 
-    // Переключение панелей
-    function showFinderPanel() { finderPanel.style.display = 'block'; loginPanel.style.display = 'none'; registerPanel.style.display = 'none'; }
-    function showLoginPanel() { finderPanel.style.display = 'none'; loginPanel.style.display = 'block'; registerPanel.style.display = 'none'; }
-    function showRegisterPanel() { finderPanel.style.display = 'none'; loginPanel.style.display = 'none'; registerPanel.style.display = 'block'; }
+    function showFinderPanel() { finderPanel.style.display = 'block'; historyPanel.style.display = 'none'; statsPanel.style.display = 'none'; searchPanel.style.display = 'none'; loginPanel.style.display = 'none'; registerPanel.style.display = 'none'; }
+    function showHistoryPanel() { finderPanel.style.display = 'none'; historyPanel.style.display = 'block'; statsPanel.style.display = 'none'; searchPanel.style.display = 'none'; loginPanel.style.display = 'none'; registerPanel.style.display = 'none'; renderHistory(); }
+    function showStatsPanel() { finderPanel.style.display = 'none'; historyPanel.style.display = 'none'; statsPanel.style.display = 'block'; searchPanel.style.display = 'none'; loginPanel.style.display = 'none'; registerPanel.style.display = 'none'; renderStats(); }
+    function showSearchPanel() { finderPanel.style.display = 'none'; historyPanel.style.display = 'none'; statsPanel.style.display = 'none'; searchPanel.style.display = 'block'; loginPanel.style.display = 'none'; registerPanel.style.display = 'none'; }
+    function showLoginPanel() { finderPanel.style.display = 'none'; historyPanel.style.display = 'none'; statsPanel.style.display = 'none'; searchPanel.style.display = 'none'; loginPanel.style.display = 'block'; registerPanel.style.display = 'none'; }
+    function showRegisterPanel() { finderPanel.style.display = 'none'; historyPanel.style.display = 'none'; statsPanel.style.display = 'none'; searchPanel.style.display = 'none'; loginPanel.style.display = 'none'; registerPanel.style.display = 'block'; }
 
     document.getElementById('tabFinderBtn').addEventListener('click', showFinderPanel);
+    document.getElementById('tabHistoryBtn').addEventListener('click', showHistoryPanel);
+    document.getElementById('tabStatsBtn').addEventListener('click', showStatsPanel);
+    document.getElementById('tabSearchBtn').addEventListener('click', showSearchPanel);
     document.getElementById('tabLoginBtn').addEventListener('click', showLoginPanel);
     document.getElementById('tabRegisterBtn').addEventListener('click', showRegisterPanel);
+    document.getElementById('clearHistoryBtn')?.addEventListener('click', clearHistory);
 
     // Регистрация
     document.getElementById('doRegisterBtn').addEventListener('click', () => {
@@ -504,6 +879,34 @@
         } else {
             document.getElementById('loginError').textContent = 'Неверный логин или пароль';
         }
+    });
+
+    // Поиск
+    document.getElementById('searchInput')?.addEventListener('input', (e) => {
+        const results = searchMovies(e.target.value);
+        const container = document.getElementById('searchResults');
+        if (results.length === 0) {
+            container.innerHTML = '<div style="color: #aaa; text-align: center;">Фильмов не найдено</div>';
+            return;
+        }
+        let html = '';
+        results.forEach(m => {
+            html += `
+                <div class="similar-item" data-movie-title="${m.title}">
+                    <div class="similar-name">🎬 ${m.title}</div>
+                    <div class="similar-info">${m.genre} · ${m.mood} · ${m.duration} · ${m.era}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('#searchResults .similar-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const title = el.dataset.movieTitle;
+                const movie = ALL_MOVIES.find(m => m.title === title);
+                if (movie) displayMovieResult(movie, true);
+                showFinderPanel();
+            });
+        });
     });
 
     // ---------- ВОЗМОЖНЫЕ ОТВЕТЫ ----------
@@ -549,7 +952,6 @@
     renderOptions('era-group', erasUI, 'era');
     renderOptions('duration-group', durationsUI, 'duration');
 
-    // Поиск точного совпадения
     function findExactMatch(answers) {
         return ALL_MOVIES.find(m => 
             m.genre === answers.genre &&
@@ -559,7 +961,6 @@
         );
     }
 
-    // Поиск похожих (по жанру + настроению, либо эпохе)
     function findSimilarMovies(answers, limit = 5) {
         let scored = ALL_MOVIES.map(movie => {
             let score = 0;
@@ -573,48 +974,38 @@
         return scored.slice(0, limit).map(item => item.movie);
     }
 
-    const findBtnFinder = document.getElementById('findBtn');
+    function getRandomMovie() {
+        return ALL_MOVIES[Math.floor(Math.random() * ALL_MOVIES.length)];
+    }
+
+    const findBtn = document.getElementById('findBtn');
+    const randomBtn = document.getElementById('randomBtn');
     const resultBox = document.getElementById('resultBox');
     const resetFinderBtn = document.getElementById('resetFinderBtn');
 
-    findBtnFinder.addEventListener('click', () => {
+    findBtn.addEventListener('click', () => {
         if (!selected.genre || !selected.mood || !selected.era || !selected.duration) {
             resultBox.innerHTML = `<div style="color:#f5c518;">⚠️ Выбери все 4 параметра</div>`;
             return;
         }
-
         const exact = findExactMatch(selected);
         if (exact) {
-            resultBox.innerHTML = `
-                <div class="movie-title">🎥 ${exact.title}</div>
-                <div class="movie-meta">
-                    <span>🎭 ${exact.genre}</span> 
-                    <span>✨ ${exact.mood}</span>
-                    <span>⏱️ ${exact.duration}</span>
-                    <span>📅 ${exact.era}</span>
-                </div>
-                <div class="movie-desc">${exact.desc}</div>
-                <div style="margin-top: 15px; font-size: 0.8rem; color: #aaa;">✅ Точное совпадение!</div>
-            `;
+            displayMovieResult(exact, true);
         } else {
             const similar = findSimilarMovies(selected, 5);
-            let similarHtml = `<div class="similar-title">🔍 Нет точного совпадения. Вот 5 похожих фильмов:</div>`;
-            similar.forEach(m => {
-                similarHtml += `
-                    <div class="similar-item">
-                        <div class="similar-name">🎬 ${m.title}</div>
-                        <div class="similar-info">${m.genre} · ${m.mood} · ${m.duration} · ${m.era}</div>
-                    </div>
-                `;
-            });
-            resultBox.innerHTML = similarHtml;
+            displaySimilarMovies(similar);
         }
+    });
+
+    randomBtn.addEventListener('click', () => {
+        const random = getRandomMovie();
+        displayMovieResult(random, true);
     });
 
     resetFinderBtn.addEventListener('click', () => {
         selected = { genre: null, mood: null, era: null, duration: null };
         document.querySelectorAll('.opt-btn').forEach(btn => btn.classList.remove('opt-active'));
-        resultBox.innerHTML = `<div style="color:#ccc;">👆 Выбери параметры и нажми «Подобрать фильм»</div>`;
+        resultBox.innerHTML = `<div style="color:#ccc;">👆 Выбери параметры или нажми «Случайный фильм»</div>`;
     });
 
     updateUIForUser();
