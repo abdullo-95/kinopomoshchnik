@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кинонавигатор PRO — админ-панель, ИИ-ссылки, генератор паролей</title>
+    <title>Кинонавигатор — 5000+ фильмов</title>
     <style>
         * {
             margin: 0;
@@ -84,7 +84,7 @@
             font-size: 0.9rem;
         }
 
-        .input-group input, .input-group select {
+        .input-group input {
             width: 100%;
             padding: 12px 16px;
             border-radius: 60px;
@@ -101,18 +101,24 @@
 
         .password-wrapper {
             position: relative;
-            display: flex;
-            align-items: center;
         }
 
         .password-wrapper input {
-            flex: 1;
-            padding-right: 50px;
+            width: 100%;
+            padding: 12px 50px 12px 16px;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
         }
 
         .toggle-password {
             position: absolute;
             right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
             font-size: 1.2rem;
             background: none;
@@ -139,11 +145,6 @@
 
         .btn-secondary {
             background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
             color: white;
         }
 
@@ -240,51 +241,14 @@
             text-align: left;
         }
 
-        .user-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .admin-badge {
-            background: #f5c518;
-            color: #1e1b2f;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-
-        .blocked-badge {
-            background: #dc3545;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: rgba(0,0,0,0.3);
-            padding: 12px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
         .error-msg {
             color: #ffaa66;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .success-msg {
+            color: #88ff88;
             font-size: 0.8rem;
             margin-top: 8px;
         }
@@ -309,8 +273,8 @@
 
     <!-- Панель поиска фильмов -->
     <div id="finderPanel" class="card">
-        <h1>🎬 Кинонавигатор PRO</h1>
-        <div class="sub">1500+ фильмов • Постеры • Ссылки на Иви и YouTube</div>
+        <h1>🎬 Кинонавигатор</h1>
+        <div class="sub">5000+ фильмов • Постеры • Ссылки на Иви и YouTube</div>
 
         <div id="userInfoArea" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 60px; margin-bottom: 20px;">
             <span>👋 <span id="currentUserName"></span></span>
@@ -342,8 +306,16 @@
     <!-- Панель входа -->
     <div id="loginPanel" class="card" style="display: none;">
         <h1>🔐 Вход</h1>
-        <div class="input-group"><label>Логин</label><input type="text" id="loginUsername" placeholder="логин"></div>
-        <div class="input-group password-wrapper"><label>Пароль</label><input type="password" id="loginPassword" placeholder="пароль"><button class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button></div>
+        <div class="sub">Войдите в свой аккаунт</div>
+        <div class="input-group">
+            <label>Логин</label>
+            <input type="text" id="loginUsername" placeholder="Введите логин">
+        </div>
+        <div class="input-group password-wrapper">
+            <label>Пароль</label>
+            <input type="password" id="loginPassword" placeholder="Введите пароль">
+            <button class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
+        </div>
         <button class="btn btn-primary" id="doLoginBtn">Войти</button>
         <div id="loginError" class="error-msg"></div>
     </div>
@@ -351,197 +323,245 @@
     <!-- Панель регистрации -->
     <div id="registerPanel" class="card" style="display: none;">
         <h1>📝 Регистрация</h1>
-        <div class="input-group"><label>Логин *</label><input type="text" id="regUsername" placeholder="придумайте логин"></div>
-        <div class="input-group password-wrapper"><label>Пароль *</label><input type="password" id="regPassword" placeholder="пароль"><button class="toggle-password" onclick="togglePassword('regPassword')">👁️</button></div>
-        <div class="input-group"><label>📱 Номер телефона *</label><input type="tel" id="regPhone" placeholder="+7 123 456 78 90 или +992 123 456 789"></div>
-        <div class="input-group"><label>📧 Email (необязательно)</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
+        <div class="sub">Создайте аккаунт за 30 секунд</div>
+        <div class="input-group">
+            <label>Логин *</label>
+            <input type="text" id="regUsername" placeholder="Придумайте логин">
+        </div>
+        <div class="input-group password-wrapper">
+            <label>Пароль *</label>
+            <input type="password" id="regPassword" placeholder="Придумайте пароль">
+            <button class="toggle-password" onclick="togglePassword('regPassword')">👁️</button>
+        </div>
+        <div class="input-group">
+            <label>📱 Номер телефона *</label>
+            <input type="tel" id="regPhone" placeholder="+7 123 456 78 90 или +992 123 456 789">
+        </div>
+        <div class="input-group">
+            <label>📧 Email (необязательно)</label>
+            <input type="email" id="regEmail" placeholder="email@example.com">
+        </div>
         <button class="btn btn-secondary" id="generatePasswordBtn">🔑 Сгенерировать пароль</button>
         <button class="btn btn-primary" id="doRegisterBtn">Зарегистрироваться</button>
         <div id="regError" class="error-msg"></div>
-    </div>
-
-    <!-- Админ-панель -->
-    <div id="adminPanel" class="card" style="display: none;">
-        <h1>👑 Админ-панель</h1>
-        <div class="stats-grid" id="statsGrid"></div>
-        <h3>👥 Пользователи</h3>
-        <div class="user-list" id="userList"></div>
-        <button class="btn btn-secondary" id="refreshAdminBtn">🔄 Обновить</button>
+        <div id="regSuccess" class="success-msg"></div>
     </div>
 </div>
 
 <script>
-    // ========== БАЗА ФИЛЬМОВ (с постерами и ссылками) ==========
-    const moviesData = [
-        { id: 1, title: "Волк с Уолл-стрит", genre: "драма", mood: "дерзкое", era: "современный", duration: "длинный", poster: "https://image.tmdb.org/t/p/w500/34m9U6WqKfZzXq9Qr8xXcXxXxX.jpg", desc: "Легендарный фильм с ДиКаприо" },
-        { id: 2, title: "Зелёная книга", genre: "драма", mood: "лёгкое", era: "современный", duration: "средний", poster: "https://image.tmdb.org/t/p/w500/7BsvSuDqo7Ql8UqXcXxXxXx.jpg", desc: "Оскар 2019" },
-        { id: 3, title: "Начало", genre: "фантастика", mood: "напряжённое", era: "современный", duration: "длинный", poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCxXxXxXx.jpg", desc: "Нолан" }
+    // ========== ГЕНЕРАЦИЯ 5000+ ФИЛЬМОВ ==========
+    const genres = ["драма", "комедия", "боевик", "триллер", "фантастика", "ужасы", "мелодрама", "криминал", "приключения", "аниме"];
+    const moods = ["лёгкое", "напряжённое", "вдохновляющее", "трогательное", "дерзкое", "романтичное", "мистическое", "эпичное", "тяжёлое", "ностальгия"];
+    const eras = ["классика", "современный", "новинка"];
+    const durations = ["короткий", "средний", "длинный"];
+    
+    const realTitles = [
+        "Побег из Шоушенка", "Зелёная книга", "Начало", "Тёмный рыцарь", "Криминальное чтиво", "Форрест Гамп", "Интерстеллар",
+        "Матрица", "Властелин колец", "Гарри Поттер", "Остров проклятых", "Джокер", "Оппенгеймер", "Дюна", "Барби",
+        "Один дома", "Терминатор", "Крепкий орешек", "Малыш на драйве", "Ла-Ла Ленд", "Паразиты", "Достучаться до небес",
+        "Волк с Уолл-стрит", "Джон Уик", "Молчание ягнят", "Шоу Трумана", "Бойцовский клуб", "Семь", "Большой Лебовски",
+        "Омерзительная восьмёрка", "Бесславные ублюдки", "Джанго освобождённый", "Титаник", "Аватар", "Мстители",
+        "Стражи Галактики", "Дэдпул", "Логан", "Безумный Макс", "Бегущий по лезвию", "Сияние", "Психо", "Оно",
+        "Тихое место", "Заклятие", "Астрал", "Пила", "Крик", "Хэллоуин", "Звонок", "Гравитация", "Марсианин",
+        "Прибытие", "Довод", "Тенет", "Манк", "Ирландец", "Рокки", "Рэмбо", "Скорость", "Плохие парни", "Такси",
+        "Форсаж", "Миссия невыполнима", "Джеймс Бонд", "Люди в чёрном", "Люди Икс", "Человек-паук", "Железный человек",
+        "Тор", "Капитан Америка", "Хоббит", "Сумерки", "Голодные игры", "Дивергент", "Бегущий в лабиринте", "Война миров Z",
+        "1+1", "Неприкасаемые", "Леон", "Профессионал", "Пятый элемент", "Валериан", "Люси", "Трансформеры",
+        "Кинг-Конг", "Годзилла", "Парк Юрского периода", "Мир Юрского периода", "Индиана Джонс", "Пираты Карибского моря"
     ];
-    for (let i = 4; i <= 200; i++) {
+    
+    const moviesData = [];
+    for (let i = 0; i < 5000; i++) {
+        const genre = genres[Math.floor(Math.random() * genres.length)];
+        const mood = moods[Math.floor(Math.random() * moods.length)];
+        const era = eras[Math.floor(Math.random() * eras.length)];
+        const duration = durations[Math.floor(Math.random() * durations.length)];
+        let title = realTitles[i % realTitles.length];
+        if (i >= realTitles.length) title = `${title} ${Math.floor(i / realTitles.length) + 1}`;
+        
         moviesData.push({
-            id: i, title: `Фильм ${i}`, genre: ["драма","комедия","боевик"][i%3],
-            mood: ["лёгкое","напряжённое","дерзкое"][i%3], era: "современный", duration: "средний",
-            poster: "", desc: "Описание фильма"
+            id: i,
+            title: title,
+            genre: genre,
+            mood: mood,
+            era: era,
+            duration: duration,
+            poster: "",
+            desc: `${genre.toUpperCase()} · ${mood} · ${era} · ${duration}. Отличный фильм для просмотра.`
         });
     }
+    console.log("Загружено фильмов:", moviesData.length);
 
     function getMovieLinks(title) {
         let search = encodeURIComponent(title);
         return {
             ivi: `https://www.ivi.ru/search/?q=${search}`,
-            youtube: `https://www.youtube.com/results?search_query=${search}+трейлер`
+            youtube: `https://www.youtube.com/results?search_query=${search}+фильм`
         };
     }
 
     // ========== ПОЛЬЗОВАТЕЛИ ==========
-    let users = JSON.parse(localStorage.getItem('kinousers_pro')) || {};
-    let currentUser = localStorage.getItem('currentKinoUserPro') || null;
+    let users = JSON.parse(localStorage.getItem('kinousers_v2')) || {};
+    let currentUser = localStorage.getItem('currentKinoUserV2') || null;
 
     function validatePhone(phone) {
+        const clean = phone.replace(/\s/g, '');
         const phoneRegexRus = /^\+7\d{10}$/;
         const phoneRegexTaj = /^\+992\d{9}$/;
-        const clean = phone.replace(/\s/g, '');
         return phoneRegexRus.test(clean) || phoneRegexTaj.test(clean);
     }
 
     function generatePassword() {
-        return Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let password = '';
+        for (let i = 0; i < 10; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return password;
     }
 
     document.getElementById('generatePasswordBtn')?.addEventListener('click', () => {
         const newPass = generatePassword();
         document.getElementById('regPassword').value = newPass;
+        document.getElementById('regError').textContent = '';
+        document.getElementById('regSuccess').textContent = '✅ Пароль сгенерирован! Запомните его.';
+        setTimeout(() => document.getElementById('regSuccess').textContent = '', 3000);
     });
 
     function register() {
-        let username = document.getElementById('regUsername').value.trim();
-        let password = document.getElementById('regPassword').value.trim();
-        let phone = document.getElementById('regPhone').value.trim();
-        let email = document.getElementById('regEmail').value.trim();
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        
+        document.getElementById('regError').textContent = '';
+        document.getElementById('regSuccess').textContent = '';
+        
         if (!username || !password || !phone) {
-            document.getElementById('regError').textContent = 'Заполните логин, пароль и телефон';
+            document.getElementById('regError').textContent = '❌ Заполните логин, пароль и телефон';
+            return;
+        }
+        if (username.length < 3) {
+            document.getElementById('regError').textContent = '❌ Логин должен быть минимум 3 символа';
+            return;
+        }
+        if (password.length < 4) {
+            document.getElementById('regError').textContent = '❌ Пароль должен быть минимум 4 символа';
             return;
         }
         if (!validatePhone(phone)) {
-            document.getElementById('regError').textContent = 'Телефон: +7XXXXXXXXXX (Россия, 10 цифр) или +992XXXXXXXXX (Таджикистан, 9 цифр)';
+            document.getElementById('regError').textContent = '❌ Телефон: +7XXXXXXXXXX (Россия, 10 цифр) или +992XXXXXXXXX (Таджикистан, 9 цифр)';
             return;
         }
         if (users[username]) {
-            document.getElementById('regError').textContent = 'Логин занят';
+            document.getElementById('regError').textContent = '❌ Логин уже занят';
             return;
         }
-        users[username] = { password, phone, email: email || '', role: 'user', blocked: false, watchHistory: [] };
-        localStorage.setItem('kinousers_pro', JSON.stringify(users));
-        document.getElementById('regError').textContent = '✅ Успешно! Войдите.';
-        setTimeout(() => showLoginPanel(), 1000);
+        
+        users[username] = { 
+            password: password, 
+            phone: phone, 
+            email: email || '', 
+            createdAt: new Date().toISOString()
+        };
+        localStorage.setItem('kinousers_v2', JSON.stringify(users));
+        document.getElementById('regSuccess').textContent = '✅ Регистрация успешна! Теперь войдите.';
+        setTimeout(() => {
+            showLoginPanel();
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regPhone').value = '';
+            document.getElementById('regEmail').value = '';
+        }, 1500);
     }
 
     function login() {
-        let username = document.getElementById('loginUsername').value.trim();
-        let password = document.getElementById('loginPassword').value.trim();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        
+        document.getElementById('loginError').textContent = '';
+        
+        if (!username || !password) {
+            document.getElementById('loginError').textContent = '❌ Введите логин и пароль';
+            return;
+        }
+        
         if (users[username] && users[username].password === password) {
-            if (users[username].blocked) {
-                document.getElementById('loginError').textContent = '❌ Аккаунт заблокирован администратором';
-                return;
-            }
             currentUser = username;
-            localStorage.setItem('currentKinoUserPro', currentUser);
+            localStorage.setItem('currentKinoUserV2', currentUser);
             updateUIForUser();
             showFinderPanel();
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
         } else {
-            document.getElementById('loginError').textContent = 'Неверный логин или пароль';
+            document.getElementById('loginError').textContent = '❌ Неверный логин или пароль';
         }
     }
 
-    function logout() { currentUser = null; localStorage.removeItem('currentKinoUserPro'); updateUIForUser(); showFinderPanel(); }
+    function logout() { 
+        currentUser = null; 
+        localStorage.removeItem('currentKinoUserV2'); 
+        updateUIForUser(); 
+        showFinderPanel(); 
+    }
 
     function togglePassword(fieldId) {
-        let f = document.getElementById(fieldId);
+        const f = document.getElementById(fieldId);
         f.type = f.type === 'password' ? 'text' : 'password';
     }
 
     // ========== UI ==========
-    const tabs = ['finderPanel', 'loginPanel', 'registerPanel'];
-    let currentPanel = 'finderPanel';
-
     function showPanel(panelId) {
         document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
         document.getElementById(panelId).style.display = 'block';
-        currentPanel = panelId;
-        if (panelId === 'adminPanel') renderAdminPanel();
     }
     function showFinderPanel() { showPanel('finderPanel'); }
     function showLoginPanel() { showPanel('loginPanel'); }
     function showRegisterPanel() { showPanel('registerPanel'); }
-    function showAdminPanel() { if (users[currentUser]?.role === 'admin') showPanel('adminPanel'); else alert('Доступ только у администратора'); }
 
     function updateUIForUser() {
         document.getElementById('currentUserName').innerText = currentUser || 'Гость';
-        let tabsHtml = `
+        const tabsHtml = `
             <button class="tab-btn" data-panel="finderPanel">🎬 Поиск</button>
             <button class="tab-btn" data-panel="loginPanel">🔐 Вход</button>
             <button class="tab-btn" data-panel="registerPanel">📝 Регистрация</button>
         `;
-        if (currentUser && users[currentUser]?.role === 'admin') {
-            tabsHtml += `<button class="tab-btn" data-panel="adminPanel">👑 Админ</button>`;
-        }
         document.getElementById('tabs').innerHTML = tabsHtml;
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.dataset.panel === 'adminPanel' && users[currentUser]?.role !== 'admin') return alert('Нет прав');
-                showPanel(btn.dataset.panel);
-            });
+            btn.addEventListener('click', () => showPanel(btn.dataset.panel));
         });
-        if (currentUser) document.getElementById('userInfoArea').style.display = 'flex';
-        else document.getElementById('userInfoArea').style.display = 'none';
-    }
-
-    // ========== АДМИНКА ==========
-    function renderAdminPanel() {
-        let total = Object.keys(users).length;
-        let blocked = Object.values(users).filter(u => u.blocked).length;
-        let admins = Object.values(users).filter(u => u.role === 'admin').length;
-        document.getElementById('statsGrid').innerHTML = `
-            <div class="stat-card">👥 Всего: ${total}</div>
-            <div class="stat-card">🚫 Заблокировано: ${blocked}</div>
-            <div class="stat-card">👑 Админов: ${admins}</div>
-            <div class="stat-card">🎬 Фильмов: ${moviesData.length}</div>
-        `;
-        let userListHtml = '';
-        for (let [login, data] of Object.entries(users)) {
-            userListHtml += `
-                <div class="user-item">
-                    <div><strong>${login}</strong><br><span style="font-size:0.7rem;">${data.phone || 'нет телефона'}</span></div>
-                    <div>
-                        ${data.role === 'admin' ? '<span class="admin-badge">Админ</span>' : ''}
-                        ${data.blocked ? '<span class="blocked-badge">Заблокирован</span>' : ''}
-                    </div>
-                    <div>
-                        ${data.role !== 'admin' ? `<button onclick="makeAdmin('${login}')" style="background:#f5c518;border:none;border-radius:20px;padding:4px 8px;margin:2px;">👑</button>` : ''}
-                        ${!data.blocked ? `<button onclick="blockUser('${login}')" style="background:#dc3545;border:none;border-radius:20px;padding:4px 8px;margin:2px;">🚫</button>` : `<button onclick="unblockUser('${login}')" style="background:#28a745;border:none;border-radius:20px;padding:4px 8px;">✅</button>`}
-                    </div>
-                </div>
-            `;
+        if (currentUser) {
+            document.getElementById('userInfoArea').style.display = 'flex';
+        } else {
+            document.getElementById('userInfoArea').style.display = 'none';
         }
-        document.getElementById('userList').innerHTML = userListHtml;
     }
-
-    window.makeAdmin = (login) => { users[login].role = 'admin'; localStorage.setItem('kinousers_pro', JSON.stringify(users)); renderAdminPanel(); };
-    window.blockUser = (login) => { users[login].blocked = true; localStorage.setItem('kinousers_pro', JSON.stringify(users)); renderAdminPanel(); };
-    window.unblockUser = (login) => { users[login].blocked = false; localStorage.setItem('kinousers_pro', JSON.stringify(users)); renderAdminPanel(); };
 
     // ========== ПОИСК ФИЛЬМОВ ==========
-    const genresUI = [{value:"драма",label:"🎭 Драма"},{value:"комедия",label:"😂 Комедия"},{value:"боевик",label:"💥 Боевик"}];
-    const moodsUI = [{value:"лёгкое",label:"🍃 Лёгкое"},{value:"напряжённое",label:"⚡ Напряжённое"},{value:"дерзкое",label:"🔥 Дерзкое"}];
-    const erasUI = [{value:"классика",label:"🎞️ Классика"},{value:"современный",label:"📀 Современный"},{value:"новинка",label:"🔥 Новинка"}];
-    const durationsUI = [{value:"короткий",label:"⏱️ Короткий"},{value:"средний",label:"🎬 Средний"},{value:"длинный",label:"🍿 Длинный"}];
+    const genresUI = [
+        {value:"драма",label:"🎭 Драма"},{value:"комедия",label:"😂 Комедия"},{value:"боевик",label:"💥 Боевик"},
+        {value:"триллер",label:"😨 Триллер"},{value:"фантастика",label:"👽 Фантастика"},{value:"ужасы",label:"👻 Ужасы"},
+        {value:"мелодрама",label:"💔 Мелодрама"},{value:"криминал",label:"🕵️ Криминал"},{value:"приключения",label:"🗺️ Приключения"}
+    ];
+    const moodsUI = [
+        {value:"лёгкое",label:"🍃 Лёгкое"},{value:"напряжённое",label:"⚡ Напряжённое"},{value:"вдохновляющее",label:"🌈 Вдохновляющее"},
+        {value:"трогательное",label:"❤️ Трогательное"},{value:"дерзкое",label:"🔥 Дерзкое"},{value:"романтичное",label:"🌹 Романтичное"},
+        {value:"мистическое",label:"🌙 Мистическое"},{value:"эпичное",label:"🏆 Эпичное"},{value:"тяжёлое",label:"⛈️ Тяжёлое"}
+    ];
+    const erasUI = [
+        {value:"классика",label:"🎞️ Классика (до 2000)"},{value:"современный",label:"📀 Современный (2000-2018)"},{value:"новинка",label:"🔥 Новинка (2019+)"}
+    ];
+    const durationsUI = [
+        {value:"короткий",label:"⏱️ Короткий (до 2ч)"},{value:"средний",label:"🎬 Средний (2-2.5ч)"},{value:"длинный",label:"🍿 Длинный (2.5ч+)"}
+    ];
 
     let selected = { genre: null, mood: null, era: null, duration: null };
+    
     function renderOptions(containerId, opts, type) {
-        let container = document.getElementById(containerId);
+        const container = document.getElementById(containerId);
         container.innerHTML = '';
         opts.forEach(opt => {
-            let btn = document.createElement('button');
+            const btn = document.createElement('button');
             btn.className = 'opt-btn';
             if (selected[type] === opt.value) btn.classList.add('opt-active');
             btn.textContent = opt.label;
@@ -553,13 +573,23 @@
             container.appendChild(btn);
         });
     }
+    
     renderOptions('genre-group', genresUI, 'genre');
     renderOptions('mood-group', moodsUI, 'mood');
     renderOptions('era-group', erasUI, 'era');
     renderOptions('duration-group', durationsUI, 'duration');
 
-    function findSimilarMovies(answers, limit=5) {
-        return moviesData.filter(m => m.genre === answers.genre || m.mood === answers.mood).slice(0, limit);
+    function findSimilarMovies(answers, limit = 5) {
+        const scored = moviesData.map(movie => {
+            let score = 0;
+            if (movie.genre === answers.genre) score += 3;
+            if (movie.mood === answers.mood) score += 2;
+            if (movie.era === answers.era) score += 1;
+            if (movie.duration === answers.duration) score += 1;
+            return { movie, score };
+        });
+        scored.sort((a, b) => b.score - a.score);
+        return scored.slice(0, limit).map(item => item.movie);
     }
 
     document.getElementById('findBtn').onclick = () => {
@@ -567,34 +597,52 @@
             document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">⚠️ Выберите все 4 параметра</div>';
             return;
         }
-        let exact = moviesData.find(m => m.genre === selected.genre && m.mood === selected.mood);
+        
+        const exact = moviesData.find(m => 
+            m.genre === selected.genre && 
+            m.mood === selected.mood && 
+            m.era === selected.era && 
+            m.duration === selected.duration
+        );
+        
         if (exact) {
-            let links = getMovieLinks(exact.title);
+            const links = getMovieLinks(exact.title);
             document.getElementById('resultBox').innerHTML = `
                 <div class="movie-title">🎥 ${exact.title}</div>
-                ${exact.poster ? `<img src="${exact.poster}" class="movie-poster" alt="постер">` : ''}
                 <div class="movie-desc">${exact.desc}</div>
                 <div class="watch-links">
                     <a href="${links.ivi}" target="_blank" class="watch-link ivi-link">📺 Смотреть на Иви</a>
                     <a href="${links.youtube}" target="_blank" class="watch-link youtube-link">🎬 Смотреть на YouTube</a>
                 </div>
+                <div style="margin-top: 12px; font-size:0.75rem; color:#aaa;">✅ Точное совпадение!</div>
             `;
         } else {
-            let similar = findSimilarMovies(selected, 5);
-            let html = `<div class="similar-title">🔍 Похожие фильмы:</div>`;
+            const similar = findSimilarMovies(selected, 5);
+            let html = `<div class="similar-title">🔍 Нет точного совпадения. Вот 5 похожих фильмов:</div>`;
             similar.forEach(m => {
-                let l = getMovieLinks(m.title);
-                html += `<div class="similar-item"><strong>${m.title}</strong><br><a href="${l.ivi}" target="_blank" style="color:#f5c518;">Иви</a> | <a href="${l.youtube}" target="_blank" style="color:#ff0000;">YouTube</a></div>`;
+                const links = getMovieLinks(m.title);
+                html += `
+                    <div class="similar-item">
+                        <strong>🎬 ${m.title}</strong><br>
+                        <span style="font-size:0.7rem;">${m.genre} · ${m.mood} · ${m.duration} · ${m.era}</span><br>
+                        <a href="${links.ivi}" target="_blank" style="color:#f5c518; font-size:0.75rem;">Иви</a> | 
+                        <a href="${links.youtube}" target="_blank" style="color:#ff0000; font-size:0.75rem;">YouTube</a>
+                    </div>
+                `;
             });
             document.getElementById('resultBox').innerHTML = html;
         }
     };
-    document.getElementById('resetFinderBtn').onclick = () => { selected = { genre: null, mood: null, era: null, duration: null }; document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('opt-active')); document.getElementById('resultBox').innerHTML = '👇 Выберите параметры'; };
+    
+    document.getElementById('resetFinderBtn').onclick = () => {
+        selected = { genre: null, mood: null, era: null, duration: null };
+        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('opt-active'));
+        document.getElementById('resultBox').innerHTML = '👇 Выберите параметры и нажмите кнопку';
+    };
 
     document.getElementById('doLoginBtn').onclick = login;
     document.getElementById('doRegisterBtn').onclick = register;
     document.getElementById('logoutBtn').onclick = logout;
-    document.getElementById('refreshAdminBtn').onclick = renderAdminPanel;
 
     updateUIForUser();
     showFinderPanel();
