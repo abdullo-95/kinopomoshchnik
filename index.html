@@ -148,6 +148,12 @@
             color: white;
         }
 
+        .btn-random {
+            background: rgba(255,255,255,0.15);
+            color: #f5c518;
+            border: 1px solid #f5c518;
+        }
+
         .question-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 28px;
@@ -192,34 +198,47 @@
             margin-top: 20px;
         }
 
-        .movie-poster {
-            width: 100%;
-            max-width: 200px;
-            border-radius: 16px;
-            margin: 10px auto;
-            display: block;
+        .movies-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .movie-card {
+            background: rgba(0,0,0,0.4);
+            border-radius: 24px;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid rgba(245,197,24,0.3);
         }
 
         .movie-title {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: #f5c518;
+            margin-bottom: 5px;
+        }
+
+        .movie-meta {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 10px;
         }
 
         .watch-links {
             display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
 
         .watch-link {
             display: inline-block;
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 40px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 0.8rem;
             transition: 0.2s;
         }
 
@@ -241,6 +260,17 @@
             text-align: left;
         }
 
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .error-msg {
             color: #ffaa66;
             font-size: 0.8rem;
@@ -253,6 +283,17 @@
             margin-top: 8px;
         }
 
+        .found-count {
+            background: #f5c518;
+            color: #1e1b2f;
+            padding: 5px 12px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
         footer {
             text-align: center;
             font-size: 0.7rem;
@@ -260,10 +301,17 @@
             margin-top: 20px;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         @media (max-width: 550px) {
             .card { padding: 20px; }
             .tabs { gap: 5px; }
             .tab-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .btn-group { flex-direction: column; }
         }
     </style>
 </head>
@@ -274,7 +322,7 @@
     <!-- Панель поиска фильмов -->
     <div id="finderPanel" class="card">
         <h1>🎬 Кинонавигатор</h1>
-        <div class="sub">5000+ фильмов • Постеры • Ссылки на Иви и YouTube</div>
+        <div class="sub">5000+ фильмов • Случайный подбор • История просмотров</div>
 
         <div id="userInfoArea" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 60px; margin-bottom: 20px;">
             <span>👋 <span id="currentUserName"></span></span>
@@ -298,9 +346,13 @@
             <div class="options" id="duration-group"></div>
         </div>
 
-        <button class="btn btn-primary" id="findBtn">🔍 ПОДОБРАТЬ ФИЛЬМ</button>
-        <div class="result-box" id="resultBox">👇 Выберите параметры</div>
-        <button class="btn btn-secondary" id="resetFinderBtn" style="margin-top: 10px;">🔄 Сбросить</button>
+        <div class="btn-group">
+            <button class="btn btn-primary" id="findBtn" style="flex:2;">🔍 ПОДОБРАТЬ ФИЛЬМЫ</button>
+            <button class="btn btn-random" id="randomBtn" style="flex:1;">🎲 Случайный</button>
+        </div>
+        <div class="result-box" id="resultBox">👇 Выберите параметры и нажмите кнопку</div>
+        <button class="btn btn-secondary" id="resetFinderBtn" style="margin-top: 10px;">🔄 Сбросить фильтры</button>
+        <button class="btn btn-secondary" id="moreMoviesBtn" style="margin-top: 5px;">🎬 Ещё фильмы (с теми же параметрами)</button>
     </div>
 
     <!-- Панель входа -->
@@ -346,6 +398,14 @@
         <div id="regError" class="error-msg"></div>
         <div id="regSuccess" class="success-msg"></div>
     </div>
+
+    <!-- Панель истории -->
+    <div id="historyPanel" class="card" style="display: none;">
+        <h1>📜 История просмотров</h1>
+        <div class="sub">Фильмы, которые вы искали ранее</div>
+        <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
+        <button class="btn btn-secondary" id="clearHistoryBtn">🗑️ Очистить историю</button>
+    </div>
 </div>
 
 <script>
@@ -386,11 +446,9 @@
             mood: mood,
             era: era,
             duration: duration,
-            poster: "",
-            desc: `${genre.toUpperCase()} · ${mood} · ${era} · ${duration}. Отличный фильм для просмотра.`
+            desc: `${genre.toUpperCase()} · ${mood} · ${era} · ${duration}`
         });
     }
-    console.log("Загружено фильмов:", moviesData.length);
 
     function getMovieLinks(title) {
         let search = encodeURIComponent(title);
@@ -401,8 +459,46 @@
     }
 
     // ========== ПОЛЬЗОВАТЕЛИ ==========
-    let users = JSON.parse(localStorage.getItem('kinousers_v2')) || {};
-    let currentUser = localStorage.getItem('currentKinoUserV2') || null;
+    let users = JSON.parse(localStorage.getItem('kinousers_v3')) || {};
+    let currentUser = localStorage.getItem('currentKinoUserV3') || null;
+    
+    // История просмотров
+    let watchHistory = JSON.parse(localStorage.getItem('watchHistory')) || [];
+
+    function saveHistory(movies, params) {
+        const entry = {
+            date: new Date().toLocaleString(),
+            params: params,
+            movies: movies.map(m => m.title)
+        };
+        watchHistory.unshift(entry);
+        if (watchHistory.length > 20) watchHistory.pop();
+        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        if (!container) return;
+        if (watchHistory.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:#aaa;">История пока пуста</div>';
+            return;
+        }
+        container.innerHTML = watchHistory.map(h => `
+            <div class="history-item">
+                <div>
+                    <strong>📅 ${h.date}</strong><br>
+                    <span style="font-size:0.7rem;">${h.params}</span><br>
+                    <span style="font-size:0.8rem; color:#f5c518;">${h.movies.join(', ')}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addToHistory(movies, params) {
+        if (!currentUser) return;
+        saveHistory(movies, params);
+        renderHistory();
+    }
 
     function validatePhone(phone) {
         const clean = phone.replace(/\s/g, '');
@@ -458,13 +554,8 @@
             return;
         }
         
-        users[username] = { 
-            password: password, 
-            phone: phone, 
-            email: email || '', 
-            createdAt: new Date().toISOString()
-        };
-        localStorage.setItem('kinousers_v2', JSON.stringify(users));
+        users[username] = { password, phone, email: email || '', createdAt: new Date().toISOString() };
+        localStorage.setItem('kinousers_v3', JSON.stringify(users));
         document.getElementById('regSuccess').textContent = '✅ Регистрация успешна! Теперь войдите.';
         setTimeout(() => {
             showLoginPanel();
@@ -488,7 +579,7 @@
         
         if (users[username] && users[username].password === password) {
             currentUser = username;
-            localStorage.setItem('currentKinoUserV2', currentUser);
+            localStorage.setItem('currentKinoUserV3', currentUser);
             updateUIForUser();
             showFinderPanel();
             document.getElementById('loginUsername').value = '';
@@ -500,7 +591,7 @@
 
     function logout() { 
         currentUser = null; 
-        localStorage.removeItem('currentKinoUserV2'); 
+        localStorage.removeItem('currentKinoUserV3'); 
         updateUIForUser(); 
         showFinderPanel(); 
     }
@@ -514,18 +605,23 @@
     function showPanel(panelId) {
         document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
         document.getElementById(panelId).style.display = 'block';
+        if (panelId === 'historyPanel') renderHistory();
     }
     function showFinderPanel() { showPanel('finderPanel'); }
     function showLoginPanel() { showPanel('loginPanel'); }
     function showRegisterPanel() { showPanel('registerPanel'); }
+    function showHistoryPanel() { showPanel('historyPanel'); }
 
     function updateUIForUser() {
         document.getElementById('currentUserName').innerText = currentUser || 'Гость';
-        const tabsHtml = `
+        let tabsHtml = `
             <button class="tab-btn" data-panel="finderPanel">🎬 Поиск</button>
             <button class="tab-btn" data-panel="loginPanel">🔐 Вход</button>
             <button class="tab-btn" data-panel="registerPanel">📝 Регистрация</button>
         `;
+        if (currentUser) {
+            tabsHtml += `<button class="tab-btn" data-panel="historyPanel">📜 История</button>`;
+        }
         document.getElementById('tabs').innerHTML = tabsHtml;
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => showPanel(btn.dataset.panel));
@@ -556,6 +652,8 @@
     ];
 
     let selected = { genre: null, mood: null, era: null, duration: null };
+    let lastFoundMovies = [];
+    let lastParamsString = '';
     
     function renderOptions(containerId, opts, type) {
         const container = document.getElementById(containerId);
@@ -579,60 +677,108 @@
     renderOptions('era-group', erasUI, 'era');
     renderOptions('duration-group', durationsUI, 'duration');
 
-    function findSimilarMovies(answers, limit = 5) {
-        const scored = moviesData.map(movie => {
-            let score = 0;
-            if (movie.genre === answers.genre) score += 3;
-            if (movie.mood === answers.mood) score += 2;
-            if (movie.era === answers.era) score += 1;
-            if (movie.duration === answers.duration) score += 1;
-            return { movie, score };
-        });
-        scored.sort((a, b) => b.score - a.score);
-        return scored.slice(0, limit).map(item => item.movie);
+    function findMoviesByParams(answers, count = 3) {
+        let filtered = moviesData.filter(m => 
+            m.genre === answers.genre && 
+            m.mood === answers.mood && 
+            m.era === answers.era && 
+            m.duration === answers.duration
+        );
+        
+        if (filtered.length === 0) {
+            filtered = moviesData.filter(m => 
+                m.genre === answers.genre && 
+                m.mood === answers.mood
+            );
+        }
+        
+        if (filtered.length === 0) {
+            filtered = moviesData.filter(m => m.genre === answers.genre);
+        }
+        
+        if (filtered.length === 0) {
+            filtered = moviesData;
+        }
+        
+        const shuffled = [...filtered];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        
+        return shuffled.slice(0, count);
     }
 
-    document.getElementById('findBtn').onclick = () => {
+    function displayMovies(movies, paramsString) {
+        if (!movies || movies.length === 0) {
+            document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">😕 Фильмов не найдено</div>';
+            return;
+        }
+        
+        let html = `<div class="found-count">🎯 Найдено фильмов: ${moviesData.filter(m => 
+            m.genre === selected.genre && m.mood === selected.mood && 
+            m.era === selected.era && m.duration === selected.duration
+        ).length} точных совпадений</div>`;
+        
+        html += `<div class="movies-grid">`;
+        movies.forEach(movie => {
+            const links = getMovieLinks(movie.title);
+            html += `
+                <div class="movie-card">
+                    <div class="movie-title">🎥 ${movie.title}</div>
+                    <div class="movie-meta">${movie.genre} · ${movie.mood} · ${movie.duration} · ${movie.era}</div>
+                    <div class="watch-links">
+                        <a href="${links.ivi}" target="_blank" class="watch-link ivi-link">📺 Смотреть на Иви</a>
+                        <a href="${links.youtube}" target="_blank" class="watch-link youtube-link">🎬 Смотреть на YouTube</a>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        document.getElementById('resultBox').innerHTML = html;
+        
+        if (currentUser && paramsString) {
+            addToHistory(movies, paramsString);
+        }
+    }
+
+    function performSearch() {
         if (!selected.genre || !selected.mood || !selected.era || !selected.duration) {
             document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">⚠️ Выберите все 4 параметра</div>';
             return;
         }
         
-        const exact = moviesData.find(m => 
-            m.genre === selected.genre && 
-            m.mood === selected.mood && 
-            m.era === selected.era && 
-            m.duration === selected.duration
-        );
-        
-        if (exact) {
-            const links = getMovieLinks(exact.title);
-            document.getElementById('resultBox').innerHTML = `
-                <div class="movie-title">🎥 ${exact.title}</div>
-                <div class="movie-desc">${exact.desc}</div>
-                <div class="watch-links">
-                    <a href="${links.ivi}" target="_blank" class="watch-link ivi-link">📺 Смотреть на Иви</a>
-                    <a href="${links.youtube}" target="_blank" class="watch-link youtube-link">🎬 Смотреть на YouTube</a>
-                </div>
-                <div style="margin-top: 12px; font-size:0.75rem; color:#aaa;">✅ Точное совпадение!</div>
-            `;
-        } else {
-            const similar = findSimilarMovies(selected, 5);
-            let html = `<div class="similar-title">🔍 Нет точного совпадения. Вот 5 похожих фильмов:</div>`;
-            similar.forEach(m => {
-                const links = getMovieLinks(m.title);
-                html += `
-                    <div class="similar-item">
-                        <strong>🎬 ${m.title}</strong><br>
-                        <span style="font-size:0.7rem;">${m.genre} · ${m.mood} · ${m.duration} · ${m.era}</span><br>
-                        <a href="${links.ivi}" target="_blank" style="color:#f5c518; font-size:0.75rem;">Иви</a> | 
-                        <a href="${links.youtube}" target="_blank" style="color:#ff0000; font-size:0.75rem;">YouTube</a>
-                    </div>
-                `;
-            });
-            document.getElementById('resultBox').innerHTML = html;
+        const paramsString = `${selected.genre} + ${selected.mood} + ${selected.era} + ${selected.duration}`;
+        lastParamsString = paramsString;
+        lastFoundMovies = findMoviesByParams(selected, 3);
+        displayMovies(lastFoundMovies, paramsString);
+    }
+
+    function moreMovies() {
+        if (!selected.genre || !selected.mood || !selected.era || !selected.duration) {
+            document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">⚠️ Сначала выберите параметры</div>';
+            return;
         }
-    };
+        const newMovies = findMoviesByParams(selected, 3);
+        const paramsString = `${selected.genre} + ${selected.mood} + ${selected.era} + ${selected.duration}`;
+        displayMovies(newMovies, paramsString);
+    }
+
+    function randomMovie() {
+        const randomIndex = Math.floor(Math.random() * moviesData.length);
+        const randomMovie = moviesData[randomIndex];
+        const paramsString = `Случайный выбор`;
+        displayMovies([randomMovie], paramsString);
+    }
+
+    document.getElementById('findBtn').onclick = performSearch;
+    document.getElementById('moreMoviesBtn').onclick = moreMovies;
+    document.getElementById('randomBtn').onclick = randomMovie;
+    document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
+        watchHistory = [];
+        localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+        renderHistory();
+    });
     
     document.getElementById('resetFinderBtn').onclick = () => {
         selected = { genre: null, mood: null, era: null, duration: null };
