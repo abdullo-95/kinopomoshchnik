@@ -1,1405 +1,603 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кинонавигатор 2.0 — 10000+ фильмов</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
-            padding: 20px;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        body.light-theme {
-            background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%);
-            color: #1a1a2e;
-        }
-
-        body.light-theme .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            color: #1a1a2e;
-        }
-
-        body.light-theme .card h1,
-        body.light-theme .card .sub {
-            color: #1a1a2e;
-        }
-
-        body.light-theme .movie-card {
-            background: rgba(0, 0, 0, 0.08);
-            border-color: rgba(0, 0, 0, 0.15);
-        }
-
-        body.light-theme .movie-title {
-            color: #e6a017;
-        }
-
-        body.light-theme .movie-meta {
-            color: #555;
-        }
-
-        body.light-theme .question-card {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        body.light-theme .opt-btn {
-            background: rgba(0, 0, 0, 0.08);
-            color: #333;
-            border-color: rgba(0, 0, 0, 0.15);
-        }
-
-        body.light-theme .opt-btn:hover,
-        body.light-theme .opt-active {
-            background: #e6a017;
-            color: white;
-        }
-
-        body.light-theme .input-group input {
-            background: rgba(0, 0, 0, 0.08);
-            color: #333;
-        }
-
-        body.light-theme .result-box {
-            background: rgba(0, 0, 0, 0.08);
-        }
-
-        body.light-theme .profile-info {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 60px;
-            color: white;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        body.light-theme .tab-btn {
-            background: rgba(0, 0, 0, 0.08);
-            color: #1a1a2e;
-        }
-
-        .tab-btn.active {
-            background: #f5c518;
-            color: #1e1b2f;
-            font-weight: bold;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 48px;
-            padding: 28px 24px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            margin-bottom: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 55px rgba(0, 0, 0, 0.4);
-        }
-
-        h1 {
-            font-size: 1.6rem;
-            text-align: center;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .sub {
-            text-align: center;
-            color: #ccc;
-            margin-bottom: 24px;
-            font-size: 0.8rem;
-        }
-
-        .input-group {
-            margin-bottom: 18px;
-        }
-
-        .input-group label {
-            display: block;
-            color: #f5c518;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 60px;
-            border: none;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .input-group input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .password-wrapper input {
-            width: 100%;
-            padding: 12px 50px 12px 16px;
-            border-radius: 60px;
-            border: none;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 1.2rem;
-            background: none;
-            border: none;
-            color: #f5c518;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 60px;
-            border: none;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background: #f5c518;
-            color: #1e1b2f;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        body.light-theme .btn-secondary {
-            background: rgba(0, 0, 0, 0.1);
-            color: #1a1a2e;
-        }
-
-        .btn-random {
-            background: rgba(255,255,255,0.15);
-            color: #f5c518;
-            border: 1px solid #f5c518;
-        }
-
-        .question-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 28px;
-            padding: 18px;
-            margin-bottom: 18px;
-        }
-
-        .question {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #f5c518;
-            margin-bottom: 10px;
-        }
-
-        .options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .opt-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 6px 14px;
-            border-radius: 60px;
-            font-size: 0.8rem;
-            color: #f0f0f0;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .opt-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .opt-btn:hover, .opt-active {
-            background: #f5c518;
-            color: #1e1b2f;
-        }
-
-        .result-box {
-            background: #0a0820e0;
-            border-radius: 32px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(245, 197, 24, 0.5);
-            margin-top: 20px;
-        }
-
-        .movies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            max-height: 700px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .movie-card {
-            background: rgba(0,0,0,0.5);
-            border-radius: 24px;
-            padding: 15px;
-            text-align: left;
-            border: 1px solid rgba(245,197,24,0.3);
-            position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .movie-poster {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .movie-description {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, margin 0.3s ease-out;
-            background: rgba(0,0,0,0.5);
-            border-radius: 16px;
-            margin-top: 0;
-            padding: 0 10px;
-            font-size: 0.8rem;
-            line-height: 1.4;
-            color: #ddd;
-        }
-
-        body.light-theme .movie-description {
-            background: rgba(0,0,0,0.1);
-            color: #555;
-        }
-
-        .movie-card.expanded .movie-description {
-            max-height: 200px;
-            margin-top: 10px;
-            padding: 10px;
-        }
-
-        .favorite-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0,0,0,0.5);
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #aaa;
-            transition: 0.2s;
-            z-index: 10;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .favorite-btn.active {
-            color: #f5c518;
-        }
-
-        .movie-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #f5c518;
-            margin-bottom: 5px;
-            padding-right: 40px;
-        }
-
-        .movie-meta {
-            font-size: 0.75rem;
-            color: #aaa;
-            margin-bottom: 10px;
-        }
-
-        .movie-rating {
-            display: inline-block;
-            margin-top: 5px;
-            font-size: 0.9rem;
-            color: #f5c518;
-        }
-
-        .watch-links {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .watch-link {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-
-        .watch-link:hover {
-            transform: scale(1.05);
-        }
-
-        .ivi-link {
-            background: #ff5e00;
-            color: white;
-        }
-
-        .youtube-link {
-            background: #ff0000;
-            color: white;
-        }
-
-        .search-box {
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 14px 20px;
-            border-radius: 60px;
-            border: none;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        body.light-theme .search-box input {
-            background: rgba(0,0,0,0.08);
-            color: #333;
-        }
-
-        .profile-info {
-            background: rgba(0,0,0,0.3);
-            border-radius: 30px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .error-msg {
-            color: #ffaa66;
-            font-size: 0.8rem;
-            margin-top: 8px;
-        }
-
-        .success-msg {
-            color: #88ff88;
-            font-size: 0.8rem;
-            margin-top: 8px;
-        }
-
-        .found-count {
-            background: #f5c518;
-            color: #1e1b2f;
-            padding: 5px 12px;
-            border-radius: 60px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .reviews-section {
-            margin-top: 15px;
-            border-top: 1px solid rgba(245,197,24,0.3);
-            padding-top: 10px;
-        }
-
-        .review-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 10px;
-            margin-top: 8px;
-            font-size: 0.8rem;
-        }
-
-        body.light-theme .review-item {
-            background: rgba(0,0,0,0.05);
-        }
-
-        .review-author {
-            color: #f5c518;
-            font-weight: bold;
-        }
-
-        .review-text {
-            margin-top: 5px;
-            color: #ddd;
-        }
-
-        body.light-theme .review-text {
-            color: #555;
-        }
-
-        .review-date {
-            font-size: 0.7rem;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        .add-review {
-            margin-top: 10px;
-        }
-
-        .add-review textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(245,197,24,0.3);
-            color: white;
-            font-size: 0.8rem;
-            resize: vertical;
-        }
-
-        body.light-theme .add-review textarea {
-            background: rgba(0,0,0,0.05);
-            color: #333;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-        }
-
-        .admin-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        .approve-btn {
-            background: #4caf50;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .pending-badge {
-            background: #ff9800;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-left: 8px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            z-index: 1000;
-        }
-
-        @media (max-width: 550px) {
-            .card { padding: 20px; }
-            .tabs { gap: 5px; }
-            .tab-btn { padding: 6px 12px; font-size: 0.75rem; }
-            .btn-group { flex-direction: column; }
-            .movies-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Домашняя аптечка</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f4f7fc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .app {
+      max-width: 1300px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+      padding: 28px 32px;
+      transition: 0.2s;
+    }
+    h1, h2, h3 {
+      font-weight: 500;
+      color: #0b2b44;
+    }
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      align-items: center;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .col {
+      flex: 1 1 300px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #e9edf4;
+      transition: 0.15s;
+    }
+    .card:hover {
+      border-color: #cbd5e1;
+    }
+    .badge {
+      background: #eef2f7;
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: #1e3a5f;
+    }
+    .btn {
+      background: #eef2f7;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1a3a5e;
+      cursor: pointer;
+      transition: 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: #1a4b78;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0f3b5f;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-outline:hover {
+      background: #f0f4fa;
+    }
+    .btn-danger {
+      background: #d9534f;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c9302c;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #dce2ec;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      background: #fafcff;
+      transition: 0.15s;
+    }
+    input:focus, textarea:focus {
+      outline: 2px solid #1a4b78;
+      outline-offset: 1px;
+      border-color: transparent;
+    }
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1f3b57;
+      margin-bottom: 4px;
+      display: inline-block;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .mt-2 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 16px; }
+    .gap-2 { gap: 12px; }
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .tag {
+      background: #eaf1fb;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+    }
+    .medicine-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 460px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .medicine-item {
+      background: #f8faff;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border-left: 4px solid #1a4b78;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .medicine-item:hover {
+      background: #eef4fe;
+    }
+    .detail-card {
+      background: #f8fcff;
+      border-radius: 24px;
+      padding: 20px 24px;
+      border: 1px solid #dde6f0;
+    }
+    .detail-card p {
+      margin: 8px 0;
+      display: flex;
+      gap: 12px;
+    }
+    .detail-card strong {
+      min-width: 110px;
+      color: #1f3b57;
+    }
+    .search-box {
+      position: relative;
+    }
+    .suggestions {
+      position: absolute;
+      background: white;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 1px solid #dce2ec;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .suggestions div {
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f4fa;
+    }
+    .suggestions div:hover {
+      background: #e8f0fe;
+    }
+    .flex-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+    }
+    .inline-flex {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .admin-panel {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 24px;
+    }
+    @media (max-width: 800px) {
+      .admin-panel { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .app { padding: 16px; }
+    }
+  </style>
 </head>
 <body>
-<button class="theme-toggle" id="themeToggle">🌙</button>
-
-<div class="container">
-    <div class="tabs" id="tabs"></div>
-
-    <!-- Панель поиска фильмов -->
-    <div id="finderPanel" class="card">
-        <h1>🎬 Кинонавигатор 2.0</h1>
-        <div class="sub">10000+ фильмов • Реальные названия • Описания • Избранное • Отзывы</div>
-
-        <div id="userInfoArea" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 60px; margin-bottom: 20px;">
-            <span>👋 <span id="currentUserName"></span></span>
-            <button id="logoutBtn" style="background: none; border: none; color: #ff8888; cursor: pointer;">Выйти</button>
+<div class="app" id="app">
+  <!-- Вход -->
+  <div id="authScreen">
+    <div class="text-center" style="max-width: 400px; margin: 0 auto;">
+      <h2 style="margin-bottom: 8px;">🏥 Домашняя аптечка</h2>
+      <p style="color: #4a667a; margin-bottom: 24px;">Вход в систему</p>
+      <div class="card">
+        <label>Логин</label>
+        <input id="loginInput" placeholder="Введите логин">
+        <label style="margin-top: 12px;">Пароль</label>
+        <input id="passwordInput" type="password" placeholder="Введите пароль">
+        <button class="btn btn-primary" style="width:100%; margin-top:18px;" onclick="login()">Войти</button>
+        <div style="margin-top: 14px; font-size:0.85rem; color:#6a7f94;">
+          <span class="badge">Обратитесь к администратору</span>
         </div>
-
-        <!-- Поиск по названию -->
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов по названию...">
-        </div>
-
-        <div class="question-card">
-            <div class="question">1️⃣ Жанр</div>
-            <div class="options" id="genre-group"></div>
-        </div>
-        <div class="question-card">
-            <div class="question">2️⃣ Настроение</div>
-            <div class="options" id="mood-group"></div>
-        </div>
-        <div class="question-card">
-            <div class="question">3️⃣ Эпоха</div>
-            <div class="options" id="era-group"></div>
-        </div>
-        <div class="question-card">
-            <div class="question">4️⃣ Длительность</div>
-            <div class="options" id="duration-group"></div>
-        </div>
-
-        <div class="btn-group">
-            <button class="btn btn-primary" id="findBtn" style="flex:2;">🔍 ПОДОБРАТЬ 5 ФИЛЬМОВ</button>
-            <button class="btn btn-random" id="randomBtn" style="flex:1;">🎲 Случайный</button>
-        </div>
-        <div class="result-box" id="resultBox">👇 Выберите параметры и нажмите кнопку</div>
-        <button class="btn btn-secondary" id="resetFinderBtn" style="margin-top: 10px;">🔄 Сбросить фильтры</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Панель входа -->
-    <div id="loginPanel" class="card" style="display: none;">
-        <h1>🔐 Вход</h1>
-        <div class="sub">Войдите в свой аккаунт</div>
-        <div class="input-group">
-            <label>Логин</label>
-            <input type="text" id="loginUsername" placeholder="Введите логин">
-        </div>
-        <div class="input-group password-wrapper">
-            <label>Пароль</label>
-            <input type="password" id="loginPassword" placeholder="Введите пароль">
-            <button class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
-        </div>
-        <button class="btn btn-primary" id="doLoginBtn">Войти</button>
-        <div id="loginError" class="error-msg"></div>
+  <!-- Панель администратора -->
+  <div id="adminPanel" class="hidden">
+    <div class="flex-between mb-2">
+      <h2>🔐 Администратор</h2>
+      <div>
+        <button class="btn btn-outline" onclick="changeAdminPassword()">Сменить пароль</button>
+        <button class="btn btn-outline" onclick="logout()">Выйти</button>
+      </div>
     </div>
+    <div class="admin-panel">
+      <div class="card">
+        <div class="flex-between">
+          <h3>Список лекарств</h3>
+          <button class="btn btn-primary" onclick="showAddMedicine()">+ Добавить</button>
+        </div>
+        <div class="medicine-list" id="adminMedicineList"></div>
+        <div id="medicineForm" class="hidden mt-2" style="border-top:1px solid #e2e8f0; padding-top:16px;">
+          <h4 id="formTitle">Добавить лекарство</h4>
+          <input id="medName" placeholder="Название *">
+          <input id="medType" placeholder="Тип (Таблетки, сироп...)" style="margin-top:8px;">
+          <input id="medQuantity" placeholder="Количество (10шт)" style="margin-top:8px;">
+          <input id="medExpiry" placeholder="Срок годности (18.08.2026)" style="margin-top:8px;">
+          <input id="medAge" placeholder="Возраст (от 5 лет)" style="margin-top:8px;">
+          <textarea id="medComment" placeholder="Для: от кашля и температуры (свободно)" style="margin-top:8px;"></textarea>
+          <div class="flex gap-2 mt-2">
+            <button class="btn btn-primary" onclick="saveMedicine()">Сохранить</button>
+            <button class="btn btn-outline" onclick="cancelForm()">Отмена</button>
+          </div>
+          <div style="margin-top:8px;">
+            <button class="btn btn-outline" onclick="addCustomField()">➕ Добавить поле</button>
+            <span id="customFieldsContainer" class="flex-wrap" style="margin-top:6px;"></span>
+          </div>
+          <input type="hidden" id="editIndex" value="-1">
+        </div>
+      </div>
+      <div class="card">
+        <h3>👤 Управление пользователями</h3>
+        <div style="background:#f2f7fe; border-radius:16px; padding:16px; margin-top:8px;">
+          <label>Создать логин</label>
+          <input id="newUserLogin" placeholder="Логин пользователя">
+          <label style="margin-top:8px;">Пароль</label>
+          <input id="newUserPassword" placeholder="Пароль">
+          <button class="btn btn-primary" style="margin-top:12px;" onclick="registerUser()">Создать пользователя</button>
+        </div>
+        <div style="margin-top:16px;">
+          <label>Зарегистрированные пользователи</label>
+          <div id="userList" style="font-size:0.95rem; background:#f8fafc; border-radius:16px; padding:8px 12px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Панель регистрации -->
-    <div id="registerPanel" class="card" style="display: none;">
-        <h1>📝 Регистрация</h1>
-        <div class="sub">Создайте аккаунт за 30 секунд</div>
-        <div class="input-group">
-            <label>Логин *</label>
-            <input type="text" id="regUsername" placeholder="Придумайте логин">
-        </div>
-        <div class="input-group password-wrapper">
-            <label>Пароль *</label>
-            <input type="password" id="regPassword" placeholder="Придумайте пароль">
-            <button class="toggle-password" onclick="togglePassword('regPassword')">👁️</button>
-        </div>
-        <div class="input-group">
-            <label>📱 Номер телефона *</label>
-            <input type="tel" id="regPhone" placeholder="+7 123 456 78 90 или +992 123 456 789">
-        </div>
-        <div class="input-group">
-            <label>📧 Email (необязательно)</label>
-            <input type="email" id="regEmail" placeholder="email@example.com">
-        </div>
-        <button class="btn btn-secondary" id="generatePasswordBtn">🔑 Сгенерировать пароль</button>
-        <button class="btn btn-primary" id="doRegisterBtn">Зарегистрироваться</button>
-        <div id="regError" class="error-msg"></div>
-        <div id="regSuccess" class="success-msg"></div>
+  <!-- Панель пользователя -->
+  <div id="userPanel" class="hidden">
+    <div class="flex-between mb-2">
+      <h2>💊 Моя аптечка</h2>
+      <button class="btn btn-outline" onclick="logout()">Выйти</button>
     </div>
-
-    <!-- Панель профиля -->
-    <div id="profilePanel" class="card" style="display: none;">
-        <h1>👤 Мой профиль</h1>
-        <div class="sub">Управление аккаунтом</div>
-        <div class="profile-info" id="profileInfo"></div>
-        <div class="input-group">
-            <label>Новый телефон</label>
-            <input type="tel" id="editPhone" placeholder="+7XXXXXXXXXX">
+    <div class="row">
+      <div class="col" style="flex: 2;">
+        <div class="card search-box">
+          <input id="searchInput" placeholder="Поиск по названию..." oninput="filterMedicines()">
+          <div id="suggestions" class="suggestions hidden"></div>
+          <div class="medicine-list" id="userMedicineList" style="margin-top:12px;"></div>
         </div>
-        <div class="input-group">
-            <label>Новый Email</label>
-            <input type="email" id="editEmail" placeholder="email@example.com">
+      </div>
+      <div class="col" style="flex: 1.5;">
+        <div class="detail-card" id="medicineDetail">
+          <p style="color:#6a7f94;">Выберите лекарство для просмотра</p>
         </div>
-        <button class="btn btn-primary" id="updateProfileBtn">💾 Обновить данные</button>
-        <div id="profileError" class="error-msg"></div>
-        <div id="profileSuccess" class="success-msg"></div>
-        
-        <h3 style="margin-top: 25px; color:#f5c518;">⭐ Избранные фильмы</h3>
-        <div id="favoritesList" style="margin-top: 15px;"></div>
-        
-        <h3 style="margin-top: 25px; color:#f5c518;">📝 Мои отзывы (на модерации)</h3>
-        <div id="myPendingReviews" style="margin-top: 15px;"></div>
+      </div>
     </div>
-
-    <!-- Панель истории -->
-    <div id="historyPanel" class="card" style="display: none;">
-        <h1>📜 История просмотров</h1>
-        <div class="sub">Фильмы, которые вы искали ранее</div>
-        <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
-        <button class="btn btn-secondary" id="clearHistoryBtn">🗑️ Очистить историю</button>
-    </div>
-
-    <!-- Панель модерации (только для админа) -->
-    <div id="adminPanel" class="card" style="display: none;">
-        <h1>👑 Панель модератора</h1>
-        <div class="sub">Управление отзывами пользователей</div>
-        <div id="pendingReviewsList" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
+  </div>
 </div>
-
 <script>
-    // ========== АДМИНИСТРАТОР ==========
-    const ADMIN_USERNAME = "admin";
-    const ADMIN_PASSWORD = "admin123";
+  // ====================== ХРАНИЛИЩЕ ======================
+  let medicines = JSON.parse(localStorage.getItem('medicines')) || [];
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+  let adminPassword = localStorage.getItem('adminPassword') || '902119549ab';
+  let currentUser = null;
+  let selectedMedIndex = -1;
+  let customFields = [];
 
-    // ========== СИСТЕМА ОТЗЫВОВ ==========
-    let reviews = JSON.parse(localStorage.getItem('movie_reviews_v4')) || [];
+  // ====================== ИНИЦИАЛИЗАЦИЯ ======================
+  function saveMedicines() {
+    localStorage.setItem('medicines', JSON.stringify(medicines));
+  }
+  function saveUsers() {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+  function saveAdminPass() {
+    localStorage.setItem('adminPassword', adminPassword);
+  }
 
-    function addReview(movieId, movieTitle, reviewText, author) {
-        if (!author) {
-            alert("Войдите, чтобы оставить отзыв");
-            return false;
-        }
-        if (!reviewText.trim()) {
-            alert("Введите текст отзыва");
-            return false;
-        }
-        
-        const newReview = {
-            id: Date.now(),
-            movieId: movieId,
-            movieTitle: movieTitle,
-            author: author,
-            text: reviewText.trim(),
-            date: new Date().toLocaleString(),
-            status: author === ADMIN_USERNAME ? "approved" : "pending" // Отзывы админа сразу одобрены
-        };
-        
-        reviews.push(newReview);
-        localStorage.setItem('movie_reviews_v4', JSON.stringify(reviews));
-        return true;
-    }
-
-    function approveReview(reviewId) {
-        if (currentUser !== ADMIN_USERNAME) return false;
-        const review = reviews.find(r => r.id == reviewId);
-        if (review) {
-            review.status = "approved";
-            localStorage.setItem('movie_reviews_v4', JSON.stringify(reviews));
-            return true;
-        }
-        return false;
-    }
-
-    function deleteReview(reviewId) {
-        if (currentUser !== ADMIN_USERNAME) return false;
-        reviews = reviews.filter(r => r.id != reviewId);
-        localStorage.setItem('movie_reviews_v4', JSON.stringify(reviews));
-        return true;
-    }
-
-    function getReviewsForMovie(movieId) {
-        return reviews.filter(r => r.movieId == movieId && r.status === "approved");
-    }
-
-    function getPendingReviews() {
-        return reviews.filter(r => r.status === "pending");
-    }
-
-    function getUserPendingReviews(username) {
-        return reviews.filter(r => r.author === username && r.status === "pending");
-    }
-
-    // ========== ГЕНЕРАЦИЯ ФИЛЬМОВ С ПОСТЕРАМИ ==========
-    const genresList = ["драма", "комедия", "боевик", "триллер", "фантастика", "ужасы", "мелодрама", "криминал", "приключения", "аниме"];
-    const moodsList = ["лёгкое", "напряжённое", "вдохновляющее", "трогательное", "дерзкое", "романтичное", "мистическое", "эпичное", "тяжёлое", "ностальгия"];
-    const erasList = ["классика", "современный", "новинка"];
-    const durationsList = ["короткий", "средний", "длинный"];
-    
-    // Реальные фильмы с описаниями и постерами
-    const realMovies = [
-        {title: "Побег из Шоушенка", genre: "драма", mood: "вдохновляющее", era: "классика", duration: "длинный", rating: 9.3, description: "Банкир Энди Дюфрейн осуждён за убийство жены и её любовника. В тюрьме Шоушенк он встречает друга и сохраняет надежду на свободу, несмотря на все препятствия. Фильм о дружбе, надежде и несгибаемости духа.", poster: "https://image.tmdb.org/t/p/w500/3h1JZGDhZ8nzxdgFkxGGAHj2jNn.jpg"},
-        {title: "Зелёная книга", genre: "драма", mood: "трогательное", era: "современный", duration: "средний", rating: 8.9, description: "Итальянский вышибала Тони становится водителем и телохранителем чернокожего пианиста Дона Ширли во время турне по американскому Югу 1960-х годов. История о преодолении предрассудков и настоящей дружбе.", poster: "https://image.tmdb.org/t/p/w500/7BsvSuD7oEiOVauRAPX5TUn8d9j.jpg"},
-        {title: "Начало", genre: "фантастика", mood: "напряжённое", era: "современный", duration: "длинный", rating: 8.8, description: "Вор Кобб способен проникать в чужие сны и красть идеи. Ему предлагают не украсть, а внедрить мысль в сознание наследника корпорации. Реальность и сон переплетаются в этом визуальном шедевре.", poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uyi.jpg"},
-        {title: "Тёмный рыцарь", genre: "боевик", mood: "эпичное", era: "современный", duration: "длинный", rating: 9.0, description: "Бэтмен объединяется с комиссаром Гордоном и прокурором Харви Дентом, чтобы противостоять хаосу, который сеет Джокер в Готэме. Фильм о грани между добром и злом.", poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"},
-        {title: "Форрест Гамп", genre: "драма", mood: "трогательное", era: "классика", duration: "средний", rating: 8.8, description: "История парня с низким IQ, который случайно становится участником важнейших событий второй половины XX века в США. Трогательная история о любви и судьбе.", poster: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"},
-        {title: "Интерстеллар", genre: "фантастика", mood: "эпичное", era: "современный", duration: "длинный", rating: 8.6, description: "Группа исследователей отправляется через червоточину, чтобы найти новое пригодное для жизни человечества место. Эпическое путешествие сквозь пространство и время.", poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"},
-        {title: "Матрица", genre: "фантастика", mood: "напряжённое", era: "классика", duration: "средний", rating: 8.7, description: "Программист Нео узнаёт, что реальность — это иллюзия, и его призывают сражаться против машин, поработивших человечество. Культовый научно-фантастический боевик.", poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"},
-        {title: "Властелин колец: Братство кольца", genre: "приключения", mood: "эпичное", era: "современный", duration: "длинный", rating: 8.8, description: "Хоббит Фродо отправляется в опасное путешествие, чтобы уничтожить Кольцо Всевластья и спасти Средиземье от Тёмного Властелина Саурона. Начало эпической саги.", poster: "https://image.tmdb.org/t/p/w500/56zTpe2xvaA4alU51sRWPoKPYZy.jpg"},
-        {title: "Властелин колец: Две крепости", genre: "приключения", mood: "эпичное", era: "современный", duration: "длинный", rating: 8.7, description: "Братство распадается: Фродо и Сэм идут к Мордору, а Арагорн, Леголас и Гимли защищают народ Рохана от армии Сарумана. Битва за Средиземье продолжается.", poster: "https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnYYNtT.jpg"},
-        {title: "Властелин колец: Возвращение короля", genre: "приключения", mood: "эпичное", era: "современный", duration: "длинный", rating: 9.0, description: "Фродо и Сэм достигают Мордора, а войска Средиземья собираются для решающей битвы против сил Саурона. Эпическое завершение легендарной трилогии.", poster: "https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"},
-        {title: "Гарри Поттер и философский камень", genre: "приключения", mood: "лёгкое", era: "современный", duration: "средний", rating: 7.6, description: "Мальчик-сирота Гарри Поттер узнаёт, что он волшебник, и поступает в школу магии Хогвартс, где начинаются его удивительные приключения.", poster: "https://image.tmdb.org/t/p/w500/lvOLivVeX3DvkOuREhIdJ5WUx8H.jpg"},
-        {title: "Джокер", genre: "драма", mood: "тяжёлое", era: "современный", duration: "средний", rating: 8.4, description: "История Артура Флека, неудачливого комика, которого общество превращает в безумного преступника Джокера. Мрачная психологическая драма о природе зла.", poster: "https://image.tmdb.org/t/p/w500/udDclJoHjfjb8EkxOUzox2P9FmD.jpg"},
-        {title: "Оппенгеймер", genre: "драма", mood: "тяжёлое", era: "современный", duration: "длинный", rating: 8.5, description: "Биографическая драма о создателе атомной бомбы Роберте Оппенгеймере и его моральных терзаниях после создания оружия массового поражения.", poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"},
-        {title: "Дюна", genre: "фантастика", mood: "эпичное", era: "современный", duration: "длинный", rating: 8.0, description: "Молодой Пол Атрейдес отправляется на опасную планету Арракис, где добывают ценнейшую специю. Эпическая научно-фантастическая сага о власти и предательстве.", poster: "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg"},
-        {title: "Барби", genre: "комедия", mood: "лёгкое", era: "современный", duration: "средний", rating: 7.0, description: "Барби и Кен отправляются в реальный мир, где сталкиваются с проблемами современного общества. Яркая и остроумная комедия о поиске себя.", poster: "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg"},
-        {title: "Один дома", genre: "комедия", mood: "лёгкое", era: "классика", duration: "короткий", rating: 7.6, description: "Мальчика Кевина случайно оставляют одного дома на Рождество, и он защищает дом от двух неуклюжих грабителей. Классическая рождественская комедия.", poster: "https://image.tmdb.org/t/p/w500/9wSfz4URP7Cm7qWqeCH3TtOQHud.jpg"},
-        {title: "Титаник", genre: "мелодрама", mood: "трогательное", era: "классика", duration: "длинный", rating: 7.9, description: "История любви Джека и Розы на фоне крушения легендарного лайнера Титаник. Эпическая мелодрама, покорившая миллионы сердец.", poster: "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg"},
-        {title: "Аватар", genre: "фантастика", mood: "эпичное", era: "современный", duration: "длинный", rating: 7.9, description: "Парализованный морпех отправляется на планету Пандора и становится одним из аборигенов На'ви. Визуальный шедевр о защите природы.", poster: "https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgmbJyK.jpg"},
-        {title: "Бойцовский клуб", genre: "триллер", mood: "дерзкое", era: "классика", duration: "средний", rating: 8.8, description: "Офисный работник и торговец мылом создают подпольный клуб, который превращается в опасное движение. Культовая драма об отчуждении.", poster: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"},
-        {title: "Паразиты", genre: "триллер", mood: "напряжённое", era: "современный", duration: "средний", rating: 8.6, description: "Семья бедняков постепенно внедряется в дом богатой семьи, что приводит к неожиданным и трагическим последствиям. Остроумная социальная сатира.", poster: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg"}
-    ];
-    
-    const moviesData = [];
-    let movieId = 0;
-    
-    // Добавляем реальные фильмы
-    for (const movie of realMovies) {
-        moviesData.push({
-            id: movieId++,
-            title: movie.title,
-            genre: movie.genre,
-            mood: movie.mood,
-            era: movie.era,
-            duration: movie.duration,
-            rating: movie.rating,
-            description: movie.description,
-            poster: movie.poster
-        });
-    }
-    
-    // Добираем до 10000 фильмов
-    const additionalTitles = [
-        "Крёстный отец", "Крёстный отец 2", "Список Шиндлера", "Хороший, плохой, злой",
-        "Назад в будущее", "Чужой", "Хищник", "Терминатор", "Терминатор 2", "Джон Уик", "Джон Уик 2", "Джон Уик 3",
-        "Дэдпул", "Дэдпул 2", "Логан", "Безумный Макс", "Семь", "Молчание ягнят", "1+1", "Леон", "Гладиатор",
-        "Троя", "300 спартанцев", "Храброе сердце", "Последний самурай", "Выживший"
-    ];
-    
-    for (const title of additionalTitles) {
-        if (movieId >= 10000) break;
-        const existingMovie = realMovies.find(m => m.title === title);
-        if (existingMovie) continue;
-        
-        moviesData.push({
-            id: movieId++,
-            title: title,
-            genre: genresList[Math.floor(Math.random() * genresList.length)],
-            mood: moodsList[Math.floor(Math.random() * moodsList.length)],
-            era: erasList[Math.floor(Math.random() * erasList.length)],
-            duration: durationsList[Math.floor(Math.random() * durationsList.length)],
-            rating: (Math.random() * 4 + 6).toFixed(1),
-            description: "Увлекательная история, полная неожиданных поворотов и ярких персонажей. Фильм, который стоит посмотреть каждому киноману.",
-            poster: "https://image.tmdb.org/t/p/w500/8cdWjvZcUzj3lFCYtLRHdQaRvq9.jpg"
-        });
-    }
-    
-    console.log("Загружено фильмов:", moviesData.length);
-
-    function getMovieLinks(title) {
-        let search = encodeURIComponent(title);
-        return {
-            ivi: `https://www.ivi.ru/search/?q=${search}`,
-            youtube: `https://www.youtube.com/results?search_query=${search}+фильм`
-        };
-    }
-
-    // ========== ПОЛЬЗОВАТЕЛИ ==========
-    let users = JSON.parse(localStorage.getItem('kinousers_v4')) || {};
-    let currentUser = localStorage.getItem('currentKinoUserV4') || null;
-    let watchHistory = JSON.parse(localStorage.getItem('watchHistory_v4')) || [];
-
-    function saveToHistory(movies, searchType) {
-        if (!currentUser) return;
-        const entry = {
-            date: new Date().toLocaleString(),
-            type: searchType,
-            movies: movies.map(m => m.title)
-        };
-        watchHistory.unshift(entry);
-        if (watchHistory.length > 30) watchHistory.pop();
-        localStorage.setItem('watchHistory_v4', JSON.stringify(watchHistory));
-    }
-
-    function renderHistory() {
-        const container = document.getElementById('historyList');
-        if (!container) return;
-        if (watchHistory.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#aaa;">История пока пуста</div>';
-            return;
-        }
-        container.innerHTML = watchHistory.map(h => `
-            <div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:20px;margin-bottom:8px;">
-                <div><strong>📅 ${h.date}</strong></div>
-                <div style="font-size:0.7rem;color:#aaa;">${h.type}</div>
-                <div style="font-size:0.8rem;color:#f5c518;">${h.movies.join(', ')}</div>
-            </div>
-        `).join('');
-    }
-
-    function getFavorites() {
-        if (!currentUser) return [];
-        return users[currentUser]?.favorites || [];
-    }
-
-    function saveFavorites(favorites) {
-        if (!currentUser) return;
-        users[currentUser].favorites = favorites;
-        localStorage.setItem('kinousers_v4', JSON.stringify(users));
-    }
-
-    function toggleFavorite(movieId) {
-        if (!currentUser) {
-            alert("Войдите, чтобы добавлять в избранное");
-            return false;
-        }
-        let favs = getFavorites();
-        if (favs.includes(movieId)) {
-            favs = favs.filter(id => id !== movieId);
-        } else {
-            favs.push(movieId);
-        }
-        saveFavorites(favs);
-        renderFavorites();
-        return true;
-    }
-
-    function isFavorite(movieId) {
-        return getFavorites().includes(movieId);
-    }
-
-    function renderFavorites() {
-        const container = document.getElementById('favoritesList');
-        if (!container) return;
-        const favIds = getFavorites();
-        if (favIds.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#aaa;">Нет избранных фильмов</div>';
-            return;
-        }
-        const favMovies = favIds.map(id => moviesData.find(m => m.id == id)).filter(m => m);
-        container.innerHTML = favMovies.map(m => renderMovieCard(m)).join('');
-    }
-
-    function renderMovieCard(movie) {
-        const links = getMovieLinks(movie.title);
-        const fav = isFavorite(movie.id);
-        const movieReviews = getReviewsForMovie(movie.id);
-        
-        let reviewsHtml = '';
-        if (movieReviews.length > 0) {
-            reviewsHtml = `<div class="reviews-section"><strong>💬 Отзывы:</strong>`;
-            movieReviews.forEach(review => {
-                reviewsHtml += `
-                    <div class="review-item">
-                        <div class="review-author">${review.author}</div>
-                        <div class="review-text">${review.text}</div>
-                        <div class="review-date">${review.date}</div>
-                    </div>
-                `;
-            });
-            reviewsHtml += `</div>`;
-        }
-        
-        return `
-            <div class="movie-card" onclick="toggleDescription(this, event)">
-                <button class="favorite-btn ${fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${movie.id})">${fav ? '⭐' : '☆'}</button>
-                <img class="movie-poster" src="${movie.poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x200?text=${encodeURIComponent(movie.title)}'">
-                <div class="movie-title">🎥 ${movie.title}</div>
-                <div class="movie-meta">${movie.genre} · ${movie.mood} · ${movie.duration} · ${movie.era}</div>
-                <div class="movie-rating">⭐ ${movie.rating}/10</div>
-                <div class="watch-links">
-                    <a href="${links.ivi}" target="_blank" class="watch-link ivi-link" onclick="event.stopPropagation()">📺 Смотреть на Иви</a>
-                    <a href="${links.youtube}" target="_blank" class="watch-link youtube-link" onclick="event.stopPropagation()">🎬 Смотреть на YouTube</a>
-                </div>
-                <div class="movie-description">${movie.description}</div>
-                ${reviewsHtml}
-                <div class="add-review">
-                    <textarea id="review-${movie.id}" placeholder="Оставьте ваш отзыв о фильме..." rows="2"></textarea>
-                    <button class="btn btn-secondary" onclick="event.stopPropagation(); submitReview(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')" style="margin-top:5px;">📝 Отправить отзыв</button>
-                </div>
-            </div>
-        `;
-    }
-
-    function submitReview(movieId, movieTitle) {
-        const textarea = document.getElementById(`review-${movieId}`);
-        const reviewText = textarea.value;
-        if (!currentUser) {
-            alert("Войдите, чтобы оставить отзыв");
-            return;
-        }
-        if (addReview(movieId, movieTitle, reviewText, currentUser)) {
-            textarea.value = '';
-            alert("Отзыв отправлен на модерацию!");
-            if (currentUser === ADMIN_USERNAME) {
-                // Обновляем отображение
-                renderPendingReviews();
-            }
-            // Обновляем текущий список фильмов
-            if (document.getElementById('resultBox').innerHTML.includes('movie-card')) {
-                performSearch();
-            }
-        }
-    }
-
-    function renderPendingReviews() {
-        if (currentUser !== ADMIN_USERNAME) return;
-        
-        const container = document.getElementById('pendingReviewsList');
-        if (!container) return;
-        
-        const pending = getPendingReviews();
-        if (pending.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#aaa;">Нет отзывов на модерации</div>';
-            return;
-        }
-        
-        container.innerHTML = pending.map(review => `
-            <div class="review-item">
-                <div class="review-author">${review.author}</div>
-                <div><strong>Фильм:</strong> ${review.movieTitle}</div>
-                <div class="review-text">${review.text}</div>
-                <div class="review-date">${review.date}</div>
-                <div class="admin-controls">
-                    <button class="admin-btn approve-btn" onclick="approveReview(${review.id})">✅ Одобрить</button>
-                    <button class="admin-btn delete-btn" onclick="deleteReview(${review.id})">🗑️ Удалить</button>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    function renderMyPendingReviews() {
-        const container = document.getElementById('myPendingReviews');
-        if (!container || !currentUser) return;
-        
-        const userPending = getUserPendingReviews(currentUser);
-        if (userPending.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#aaa;">Нет отзывов на модерации</div>';
-            return;
-        }
-        
-        container.innerHTML = userPending.map(review => `
-            <div class="review-item">
-                <div><strong>Фильм:</strong> ${review.movieTitle}</div>
-                <div class="review-text">${review.text}</div>
-                <div class="review-date">${review.date}</div>
-                <span class="pending-badge">⏳ На модерации</span>
-            </div>
-        `).join('');
-    }
-
-    function renderProfile() {
-        if (!currentUser) return;
-        const user = users[currentUser];
-        document.getElementById('profileInfo').innerHTML = `
-            <div><strong>👤 Логин:</strong> ${currentUser}</div>
-            <div><strong>📱 Телефон:</strong> ${user.phone || 'не указан'}</div>
-            <div><strong>📧 Email:</strong> ${user.email || 'не указан'}</div>
-            <div><strong>📅 Дата регистрации:</strong> ${user.createdAt || 'неизвестно'}</div>
-        `;
-        document.getElementById('editPhone').value = user.phone || '';
-        document.getElementById('editEmail').value = user.email || '';
-        renderFavorites();
-        renderMyPendingReviews();
-    }
-
-    function updateProfile() {
-        const newPhone = document.getElementById('editPhone').value.trim();
-        const newEmail = document.getElementById('editEmail').value.trim();
-        if (newPhone && !validatePhone(newPhone)) {
-            document.getElementById('profileError').textContent = '❌ Неверный формат телефона';
-            return;
-        }
-        if (currentUser && users[currentUser]) {
-            if (newPhone) users[currentUser].phone = newPhone;
-            users[currentUser].email = newEmail;
-            localStorage.setItem('kinousers_v4', JSON.stringify(users));
-            document.getElementById('profileSuccess').textContent = '✅ Данные обновлены';
-            setTimeout(() => document.getElementById('profileSuccess').textContent = '', 2000);
-            renderProfile();
-        }
-    }
-
-    function validatePhone(phone) {
-        const clean = phone.replace(/\s/g, '');
-        const phoneRegexRus = /^\+7\d{10}$/;
-        const phoneRegexTaj = /^\+992\d{9}$/;
-        return phoneRegexRus.test(clean) || phoneRegexTaj.test(clean);
-    }
-
-    function generatePassword() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let password = '';
-        for (let i = 0; i < 10; i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return password;
-    }
-
-    document.getElementById('generatePasswordBtn')?.addEventListener('click', () => {
-        const newPass = generatePassword();
-        document.getElementById('regPassword').value = newPass;
-        document.getElementById('regError').textContent = '';
-        document.getElementById('regSuccess').textContent = '✅ Пароль сгенерирован! Запомните его.';
-        setTimeout(() => document.getElementById('regSuccess').textContent = '', 3000);
+  // Создаем тестового пользователя если нет
+  if (users.length === 0) {
+    users.push({ login: 'user', password: '1234' });
+    saveUsers();
+  }
+  
+  // Тестовые лекарства
+  if (medicines.length === 0) {
+    medicines.push({
+      name: 'Парецетамол',
+      type: 'Таблетки',
+      quantity: '6шт (из 10)',
+      expiry: 'до 18.08.2026',
+      age: 'от 5 лет',
+      comment: 'от кашля и температуры',
+      custom: {}
     });
+    medicines.push({
+      name: 'Пенталгин',
+      type: 'Таблетки',
+      quantity: '1 упаковка',
+      expiry: 'до 01.12.2025',
+      age: 'от 12 лет',
+      comment: 'головная боль, спазмы',
+      custom: {}
+    });
+    saveMedicines();
+  }
 
-    function register() {
-        const username = document.getElementById('regUsername').value.trim();
-        const password = document.getElementById('regPassword').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        
-        document.getElementById('regError').textContent = '';
-        document.getElementById('regSuccess').textContent = '';
-        
-        if (!username || !password || !phone) {
-            document.getElementById('regError').textContent = '❌ Заполните логин, пароль и телефон';
-            return;
-        }
-        if (username.length < 3) {
-            document.getElementById('regError').textContent = '❌ Логин должен быть минимум 3 символа';
-            return;
-        }
-        if (password.length < 4) {
-            document.getElementById('regError').textContent = '❌ Пароль должен быть минимум 4 символа';
-            return;
-        }
-        if (!validatePhone(phone)) {
-            document.getElementById('regError').textContent = '❌ Телефон: +7XXXXXXXXXX (Россия, 10 цифр) или +992XXXXXXXXX (Таджикистан, 9 цифр)';
-            return;
-        }
-        if (users[username]) {
-            document.getElementById('regError').textContent = '❌ Логин уже занят';
-            return;
-        }
-        
-        users[username] = { password, phone, email: email || '', createdAt: new Date().toLocaleString(), favorites: [] };
-        localStorage.setItem('kinousers_v4', JSON.stringify(users));
-        document.getElementById('regSuccess').textContent = '✅ Регистрация успешна! Теперь войдите.';
-        setTimeout(() => {
-            showLoginPanel();
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regPassword').value = '';
-            document.getElementById('regPhone').value = '';
-            document.getElementById('regEmail').value = '';
-        }, 1500);
-    }
+  // ====================== ОТОБРАЖЕНИЕ ======================
+  function renderAdminList() {
+    const container = document.getElementById('adminMedicineList');
+    if (!medicines.length) { container.innerHTML = '<p style="color:#8a9db0;">Нет лекарств</p>'; return; }
+    container.innerHTML = medicines.map((m, i) => `
+      <div class="medicine-item">
+        <span><strong>${m.name}</strong> <span class="tag">${m.type || 'не указан'}</span></span>
+        <span>
+          <button class="btn btn-outline" style="padding:4px 10px;" onclick="editMedicine(${i})">✎</button>
+          <button class="btn btn-danger" style="padding:4px 10px;" onclick="deleteMedicine(${i})">✕</button>
+        </span>
+      </div>
+    `).join('');
+  }
 
-    function login() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        
-        document.getElementById('loginError').textContent = '';
-        
-        if (!username || !password) {
-            document.getElementById('loginError').textContent = '❌ Введите логин и пароль';
-            return;
-        }
-        
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-            currentUser = ADMIN_USERNAME;
-            localStorage.setItem('currentKinoUserV4', currentUser);
-            updateUIForUser();
-            showFinderPanel();
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            return;
-        }
-        
-        if (users[username] && users[username].password === password) {
-            currentUser = username;
-            localStorage.setItem('currentKinoUserV4', currentUser);
-            updateUIForUser();
-            showFinderPanel();
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-        } else {
-            document.getElementById('loginError').textContent = '❌ Неверный логин или пароль';
-        }
-    }
-
-    function logout() { 
-        currentUser = null; 
-        localStorage.removeItem('currentKinoUserV4'); 
-        updateUIForUser(); 
-        showFinderPanel(); 
-    }
-
-    function togglePassword(fieldId) {
-        const f = document.getElementById(fieldId);
-        f.type = f.type === 'password' ? 'text' : 'password';
-    }
-
-    function toggleDescription(element, event) {
-        if (event && event.target.closest('.watch-link')) return;
-        if (event && event.target.closest('.favorite-btn')) return;
-        if (event && event.target.closest('.add-review')) return;
-        if (event && event.target.closest('.admin-btn')) return;
-        element.classList.toggle('expanded');
-    }
-
-    window.toggleDescription = toggleDescription;
-    window.toggleFavorite = toggleFavorite;
-    window.submitReview = submitReview;
-    window.approveReview = (id) => { approveReview(id); renderPendingReviews(); performSearch(); };
-    window.deleteReview = (id) => { deleteReview(id); renderPendingReviews(); performSearch(); };
-
-    function showPanel(panelId) {
-        document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
-        document.getElementById(panelId).style.display = 'block';
-        if (panelId === 'historyPanel') renderHistory();
-        if (panelId === 'profilePanel') renderProfile();
-        if (panelId === 'adminPanel') renderPendingReviews();
-    }
+  function renderUserList(filter = '') {
+    const container = document.getElementById('userMedicineList');
+    const filtered = filter ? medicines.filter(m => m.name.toLowerCase().includes(filter.toLowerCase())) : medicines;
+    if (!filtered.length) { container.innerHTML = '<p style="color:#8a9db0;">Нет совпадений</p>'; return; }
+    container.innerHTML = filtered.map((m, i) => {
+      const realIndex = medicines.indexOf(m);
+      return `<div class="medicine-item" onclick="showDetail(${realIndex})">
+        <span><strong>${m.name}</strong> <span class="tag">${m.type || ''}</span></span>
+        <span style="font-size:0.85rem; color:#3a5b7a;">${m.quantity || ''}</span>
+      </div>`;
+    }).join('');
     
-    function showFinderPanel() { showPanel('finderPanel'); }
-    function showLoginPanel() { showPanel('loginPanel'); }
-    function showRegisterPanel() { showPanel('registerPanel'); }
-    function showProfilePanel() { showPanel('profilePanel'); }
-    function showHistoryPanel() { showPanel('historyPanel'); }
-    function showAdminPanel() { showPanel('adminPanel'); }
-
-    function updateUIForUser() {
-        document.getElementById('currentUserName').innerText = currentUser || 'Гость';
-        let tabsHtml = `
-            <button class="tab-btn" data-panel="finderPanel">🎬 Поиск</button>
-            <button class="tab-btn" data-panel="loginPanel">🔐 Вход</button>
-            <button class="tab-btn" data-panel="registerPanel">📝 Регистрация</button>
-        `;
-        if (currentUser) {
-            tabsHtml += `<button class="tab-btn" data-panel="profilePanel">👤 Профиль</button>`;
-            tabsHtml += `<button class="tab-btn" data-panel="historyPanel">📜 История</button>`;
-            if (currentUser === ADMIN_USERNAME) {
-                tabsHtml += `<button class="tab-btn" data-panel="adminPanel">👑 Модерация</button>`;
-            }
-        }
-        document.getElementById('tabs').innerHTML = tabsHtml;
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => showPanel(btn.dataset.panel));
-        });
-        if (currentUser) {
-            document.getElementById('userInfoArea').style.display = 'flex';
-        } else {
-            document.getElementById('userInfoArea').style.display = 'none';
-        }
+    const sugg = document.getElementById('suggestions');
+    if (filter.length >= 1 && filtered.length) {
+      sugg.classList.remove('hidden');
+      sugg.innerHTML = filtered.slice(0, 6).map(m => `<div onclick="showDetail(${medicines.indexOf(m)})">${m.name}</div>`).join('');
+    } else {
+      sugg.classList.add('hidden');
     }
+  }
 
-    // ========== ПОИСК ФИЛЬМОВ ==========
-    const genresUI = [
-        {value:"драма",label:"🎭 Драма"},{value:"комедия",label:"😂 Комедия"},{value:"боевик",label:"💥 Боевик"},
-        {value:"триллер",label:"😨 Триллер"},{value:"фантастика",label:"👽 Фантастика"},{value:"ужасы",label:"👻 Ужасы"},
-        {value:"мелодрама",label:"💔 Мелодрама"},{value:"криминал",label:"🕵️ Криминал"},{value:"приключения",label:"🗺️ Приключения"}
-    ];
-    const moodsUI = [
-        {value:"лёгкое",label:"🍃 Лёгкое"},{value:"напряжённое",label:"⚡ Напряжённое"},{value:"вдохновляющее",label:"🌈 Вдохновляющее"},
-        {value:"трогательное",label:"❤️ Трогательное"},{value:"дерзкое",label:"🔥 Дерзкое"},{value:"романтичное",label:"🌹 Романтичное"},
-        {value:"мистическое",label:"🌙 Мистическое"},{value:"эпичное",label:"🏆 Эпичное"},{value:"тяжёлое",label:"⛈️ Тяжёлое"}
-    ];
-    const erasUI = [
-        {value:"классика",label:"🎞️ Классика (до 2000)"},{value:"современный",label:"📀 Современный (2000-2018)"},{value:"новинка",label:"🔥 Новинка (2019+)"}
-    ];
-    const durationsUI = [
-        {value:"короткий",label:"⏱️ Короткий (до 2ч)"},{value:"средний",label:"🎬 Средний (2-2.5ч)"},{value:"длинный",label:"🍿 Длинный (2.5ч+)"}
-    ];
-
-    let selected = { genre: null, mood: null, era: null, duration: null };
-    
-    function renderOptions(containerId, opts, type) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
-        opts.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'opt-btn';
-            if (selected[type] === opt.value) btn.classList.add('opt-active');
-            btn.textContent = opt.label;
-            btn.onclick = () => {
-                document.querySelectorAll(`#${containerId} .opt-btn`).forEach(b => b.classList.remove('opt-active'));
-                btn.classList.add('opt-active');
-                selected[type] = opt.value;
-            };
-            container.appendChild(btn);
-        });
+  function showDetail(index) {
+    selectedMedIndex = index;
+    const m = medicines[index];
+    if (!m) return;
+    const container = document.getElementById('medicineDetail');
+    let customHtml = '';
+    if (m.custom) {
+      for (let [key, val] of Object.entries(m.custom)) {
+        if (val) customHtml += `<p><strong>${key}:</strong> ${val}</p>`;
+      }
     }
-    
-    renderOptions('genre-group', genresUI, 'genre');
-    renderOptions('mood-group', moodsUI, 'mood');
-    renderOptions('era-group', erasUI, 'era');
-    renderOptions('duration-group', durationsUI, 'duration');
+    container.innerHTML = `
+      <h3 style="margin-bottom:12px;">${m.name}</h3>
+      <p><strong>Тип:</strong> ${m.type || '—'}</p>
+      <p><strong>Количество:</strong> ${m.quantity || '—'}</p>
+      <p><strong>Срок годности:</strong> ${m.expiry || '—'}</p>
+      <p><strong>Возраст:</strong> ${m.age || '—'}</p>
+      <p><strong>Для:</strong> ${m.comment || '—'}</p>
+      ${customHtml}
+    `;
+  }
 
-    function searchByTitle() {
-        const query = document.getElementById('searchInput').value.toLowerCase().trim();
-        if (!query) return;
-        
-        const results = moviesData.filter(m => m.title.toLowerCase().includes(query));
-        if (results.length === 0) {
-            document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">😕 Ничего не найдено</div>';
-            return;
-        }
-        
-        const topResults = results.slice(0, 10);
-        let html = `<div class="found-count">🔍 Найдено по запросу "${query}": ${results.length} фильмов</div>`;
-        html += `<div class="movies-grid">`;
-        topResults.forEach(movie => {
-            html += renderMovieCard(movie);
-        });
-        html += `</div>`;
-        document.getElementById('resultBox').innerHTML = html;
-        
-        if (currentUser) saveToHistory(topResults, `Поиск: "${query}"`);
-    }
+  function filterMedicines() {
+    const val = document.getElementById('searchInput').value;
+    renderUserList(val);
+  }
 
-    function findSimilarMovies(answers, count = 5) {
-        let filtered = moviesData.filter(m => 
-            m.genre === answers.genre && 
-            m.mood === answers.mood && 
-            m.era === answers.era && 
-            m.duration === answers.duration
-        );
-        
-        if (filtered.length < count) {
-            const more = moviesData.filter(m => 
-                m.genre === answers.genre && 
-                m.mood === answers.mood
-            );
-            filtered = [...new Map([...filtered, ...more].map(m => [m.id, m])).values()];
-        }
-        
-        if (filtered.length < count) {
-            const evenMore = moviesData.filter(m => m.genre === answers.genre);
-            filtered = [...new Map([...filtered, ...evenMore].map(m => [m.id, m])).values()];
-        }
-        
-        const shuffled = [...filtered];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        
-        return shuffled.slice(0, count);
-    }
+  // ====================== АДМИН: ЛЕКАРСТВА ======================
+  function showAddMedicine() {
+    document.getElementById('medicineForm').classList.remove('hidden');
+    document.getElementById('formTitle').innerText = '➕ Новое лекарство';
+    document.getElementById('editIndex').value = -1;
+    clearForm();
+    customFields = [];
+    renderCustomFields();
+  }
 
-    function performSearch() {
-        if (!selected.genre || !selected.mood || !selected.era || !selected.duration) {
-            document.getElementById('resultBox').innerHTML = '<div style="color:#f5c518;">⚠️ Выберите все 4 параметра</div>';
-            return;
-        }
-        
-        const movies = findSimilarMovies(selected, 5);
-        const paramsString = `${selected.genre} + ${selected.mood} + ${selected.era} + ${selected.duration}`;
-        
-        let html = `<div class="found-count">🎯 По вашему запросу найдено 5 фильмов:</div>`;
-        html += `<div class="movies-grid">`;
-        movies.forEach(movie => {
-            html += renderMovieCard(movie);
-        });
-        html += `</div>`;
-        document.getElementById('resultBox').innerHTML = html;
-        
-        if (currentUser) saveToHistory(movies, `Подбор: ${paramsString}`);
-    }
+  function editMedicine(index) {
+    const m = medicines[index];
+    document.getElementById('medicineForm').classList.remove('hidden');
+    document.getElementById('formTitle').innerText = '✎ Редактировать';
+    document.getElementById('editIndex').value = index;
+    document.getElementById('medName').value = m.name || '';
+    document.getElementById('medType').value = m.type || '';
+    document.getElementById('medQuantity').value = m.quantity || '';
+    document.getElementById('medExpiry').value = m.expiry || '';
+    document.getElementById('medAge').value = m.age || '';
+    document.getElementById('medComment').value = m.comment || '';
+    customFields = m.custom ? Object.entries(m.custom).map(([k,v]) => ({key:k, value:v})) : [];
+    renderCustomFields();
+  }
 
-    function randomMovie() {
-        const randomIndex = Math.floor(Math.random() * moviesData.length);
-        const randomMovie = moviesData[randomIndex];
-        const html = `<div class="movies-grid">${renderMovieCard(randomMovie)}</div>`;
-        document.getElementById('resultBox').innerHTML = html;
-        if (currentUser) saveToHistory([randomMovie], `Случайный фильм`);
-    }
-
-    // Обработчики событий
-    document.getElementById('findBtn').onclick = performSearch;
-    document.getElementById('randomBtn').onclick = randomMovie;
-    document.getElementById('resetFinderBtn').onclick = () => {
-        selected = { genre: null, mood: null, era: null, duration: null };
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('opt-active'));
-        document.getElementById('resultBox').innerHTML = '👇 Выберите параметры и нажмите кнопку';
+  function saveMedicine() {
+    const name = document.getElementById('medName').value.trim();
+    if (!name) { alert('Название обязательно'); return; }
+    const index = parseInt(document.getElementById('editIndex').value);
+    const obj = {
+      name,
+      type: document.getElementById('medType').value.trim(),
+      quantity: document.getElementById('medQuantity').value.trim(),
+      expiry: document.getElementById('medExpiry').value.trim(),
+      age: document.getElementById('medAge').value.trim(),
+      comment: document.getElementById('medComment').value.trim(),
+      custom: {}
     };
-    document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
-        watchHistory = [];
-        localStorage.setItem('watchHistory_v4', JSON.stringify(watchHistory));
-        renderHistory();
-    });
-    document.getElementById('updateProfileBtn')?.addEventListener('click', updateProfile);
-    document.getElementById('searchInput')?.addEventListener('input', searchByTitle);
-    document.getElementById('doLoginBtn').onclick = login;
-    document.getElementById('doRegisterBtn').onclick = register;
-    document.getElementById('logoutBtn').onclick = logout;
+    customFields.forEach(cf => { if (cf.key.trim()) obj.custom[cf.key.trim()] = cf.value.trim(); });
+    if (index === -1) {
+      medicines.push(obj);
+    } else {
+      medicines[index] = obj;
+    }
+    saveMedicines();
+    renderAdminList();
+    cancelForm();
+    if (currentUser !== 'admin') renderUserList(document.getElementById('searchInput').value);
+  }
 
-    // Тёмная тема
-    function toggleTheme() {
-        document.body.classList.toggle('light-theme');
-        const isLight = document.body.classList.contains('light-theme');
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
+  function deleteMedicine(index) {
+    if (confirm('Удалить "'+medicines[index].name+'" ?')) {
+      medicines.splice(index, 1);
+      saveMedicines();
+      renderAdminList();
+      if (currentUser !== 'admin') renderUserList(document.getElementById('searchInput').value);
+      document.getElementById('medicineDetail').innerHTML = '<p style="color:#6a7f94;">Выберите лекарство</p>';
+    }
+  }
+
+  function cancelForm() {
+    document.getElementById('medicineForm').classList.add('hidden');
+    clearForm();
+  }
+  function clearForm() {
+    document.getElementById('medName').value = '';
+    document.getElementById('medType').value = '';
+    document.getElementById('medQuantity').value = '';
+    document.getElementById('medExpiry').value = '';
+    document.getElementById('medAge').value = '';
+    document.getElementById('medComment').value = '';
+    document.getElementById('editIndex').value = -1;
+    customFields = [];
+    renderCustomFields();
+  }
+
+  function addCustomField() {
+    const key = prompt('Название поля (например: "Производитель")');
+    if (key && key.trim()) {
+      const val = prompt('Значение для "'+key+'"');
+      customFields.push({ key: key.trim(), value: val ? val.trim() : '' });
+      renderCustomFields();
+    }
+  }
+  function removeCustomField(idx) {
+    customFields.splice(idx, 1);
+    renderCustomFields();
+  }
+  function renderCustomFields() {
+    const container = document.getElementById('customFieldsContainer');
+    container.innerHTML = customFields.map((cf, i) => `
+      <span class="badge" style="display:inline-flex; align-items:center; gap:6px;">
+        ${cf.key}: ${cf.value || '…'}
+        <span style="cursor:pointer; font-weight:bold;" onclick="removeCustomField(${i})">✕</span>
+      </span>
+    `).join('');
+  }
+
+  // ====================== УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ======================
+  function registerUser() {
+    const login = document.getElementById('newUserLogin').value.trim();
+    const pass = document.getElementById('newUserPassword').value.trim();
+    if (!login || !pass) { alert('Заполните логин и пароль'); return; }
+    if (users.find(u => u.login === login)) { alert('Такой логин уже есть'); return; }
+    users.push({ login, password: pass });
+    saveUsers();
+    renderUserListUI();
+    document.getElementById('newUserLogin').value = '';
+    document.getElementById('newUserPassword').value = '';
+    alert('Пользователь создан!');
+  }
+
+  function renderUserListUI() {
+    const container = document.getElementById('userList');
+    if (!users.length) { container.innerHTML = 'Нет пользователей'; return; }
+    container.innerHTML = users.map(u => `<div style="padding:6px 0; border-bottom:1px solid #eef2f7;">👤 ${u.login}</div>`).join('');
+  }
+
+  // ====================== АДМИН: СМЕНА ПАРОЛЯ ======================
+  function changeAdminPassword() {
+    const newPass = prompt('Введите новый пароль администратора');
+    if (newPass && newPass.trim()) {
+      adminPassword = newPass.trim();
+      saveAdminPass();
+      alert('Пароль администратора изменён!');
+    }
+  }
+
+  // ====================== ВХОД / ВЫХОД ======================
+  function login() {
+    const login = document.getElementById('loginInput').value.trim();
+    const pass = document.getElementById('passwordInput').value.trim();
+    
+    // Проверка администратора
+    if (login === 'AdminAbdullo' && pass === adminPassword) {
+      currentUser = 'admin';
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('userPanel').classList.add('hidden');
+      renderAdminList();
+      renderUserListUI();
+      return;
     }
     
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        document.getElementById('themeToggle').textContent = '🌙';
+    // Проверка пользователя
+    const user = users.find(u => u.login === login && u.password === pass);
+    if (user) {
+      currentUser = user.login;
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('userPanel').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.add('hidden');
+      renderUserList('');
+      document.getElementById('medicineDetail').innerHTML = '<p style="color:#6a7f94;">Выберите лекарство</p>';
+      return;
     }
-    document.getElementById('themeToggle').onclick = toggleTheme;
+    alert('Неверные логин или пароль');
+  }
 
-    updateUIForUser();
-    showFinderPanel();
+  function logout() {
+    currentUser = null;
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('adminPanel').classList.add('hidden');
+    document.getElementById('userPanel').classList.add('hidden');
+    document.getElementById('loginInput').value = '';
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('medicineDetail').innerHTML = '<p style="color:#6a7f94;">Выберите лекарство</p>';
+  }
+
+  // ====================== СТАРТ ======================
+  renderUserListUI();
 </script>
 </body>
 </html>
